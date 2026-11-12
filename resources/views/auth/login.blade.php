@@ -273,10 +273,6 @@
                     </p>
                 @endif
 
-                <div class="acc-demo">
-                    Demo admin: finance@example.com / Test123!<br>
-                    Superuser: superuser@superuser.com / Test123!
-                </div>
             </div>
         </div>
     </section>

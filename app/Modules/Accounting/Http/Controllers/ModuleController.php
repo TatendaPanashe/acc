@@ -22,8 +22,17 @@ class ModuleController extends Controller
 {
     public function show(string $module): View|RedirectResponse
     {
-        if ($module === 'point-of-sale') {
-            return redirect()->route('accounting.pos.create');
+        // Modules with their own working screens.
+        $screens = [
+            'point-of-sale' => 'accounting.pos.create',
+            'reporting-analytics' => 'accounting.reporting.index',
+            'bom-job-costing' => 'accounting.bom-job-costing.index',
+            'annuity-billing' => 'accounting.annuity-billing.index',
+            'approvals-audit' => 'accounting.approvals-audit.index',
+            'ai-automation' => 'accounting.ai-automation.index',
+        ];
+        if (isset($screens[$module])) {
+            return redirect()->route($screens[$module]);
         }
 
         abort_unless(array_key_exists($module, $this->modules()), 404);
@@ -47,34 +56,9 @@ class ModuleController extends Controller
         return $this->show('fixed-assets');
     }
 
-    public function reporting(): View|RedirectResponse
-    {
-        return $this->show('reporting-analytics');
-    }
-
     public function crm(): View|RedirectResponse
     {
         return $this->show('crm');
-    }
-
-    public function bomJobCosting(): View|RedirectResponse
-    {
-        return $this->show('bom-job-costing');
-    }
-
-    public function annuityBilling(): View|RedirectResponse
-    {
-        return $this->show('annuity-billing');
-    }
-
-    public function approvalsAudit(): View|RedirectResponse
-    {
-        return $this->show('approvals-audit');
-    }
-
-    public function aiAutomation(): View|RedirectResponse
-    {
-        return $this->show('ai-automation');
     }
 
     public function clientPortal(): View|RedirectResponse

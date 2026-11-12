@@ -4,6 +4,8 @@ namespace App\Modules\Accounting\Models;
 
 class StockMovement extends AccountingModel
 {
+    protected static bool $audited = false;
+
     protected $table = 'accounting_stock_movements';
 
     protected $fillable = [

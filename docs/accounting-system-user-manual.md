@@ -492,6 +492,83 @@ Open **Depreciation Runs** under Enterprise Modules. Choose an open period to pr
 - A run covers every month not yet depreciated, so a missed month is caught up next time. Each period can be run once.
 - The run posts Dr Depreciation expense, Cr Accumulated depreciation, and updates each asset's accumulated depreciation and net book value.
 
+## 10C. Approvals & Audit
+
+Open **Approvals & Audit** under Enterprise Modules.
+
+**Approval inbox.** Every document waiting for approval in one list: journals, supplier invoices, supplier payments, payment runs, credit notes, purchase orders, sales orders and stores requisitions. It shows who prepared each document and how long it has waited. Finance Managers and Company Admins can approve it there (Post / Approve / Confirm) or **Return** it with a reason. Accountants see only their own documents, including any that were returned and why. Every decision is kept in the decision history.
+
+**Approval rules** (Company Admin). Without rules, any Finance Manager or Company Admin can approve anything. A rule can:
+- require a Company Admin from a given amount (in base currency), for one document type or for all documents;
+- stop the person who captured a document from approving it (segregation of duties).
+
+The rule with the highest "from amount" not above the document's amount applies. Rules also apply when a supplier payment is posted on capture.
+
+**Audit trail** (Business plan and above; Company Admin, Finance Manager and Auditor). Every create, change and delete of accounting records is recorded automatically with the user, time, IP address and the before/after values. So are postings, approvals, returns, sign-ins and team changes. Filter by user, record type, event, value or date; open an entry to see the full history of that record; export to CSV. The trail cannot be edited in acc263, and each entry carries a checksum chained to the previous one. **Verify** recomputes the chain and reports the first entry that was changed or removed outside acc263.
+
+## 10D. Reporting & Analytics
+
+Open **Reporting & Analytics** (Professional plan and above; Company Admin, Finance Manager, Auditor).
+
+**Dashboard.** Revenue, gross profit and margin, operating expenses and net profit for the chosen period, compared with the previous period or the same period last year (▲/▼ with the change). Also cash and bank, receivables with days sales outstanding, payables with days payables outstanding, and the current ratio. Charts show 12 months of revenue against expenses, receivables aging, top customers and the largest expenses; each chart has a "View as table". Expense accounts coded 5xxx count as cost of sales.
+
+**Report library.** Profit & loss (with comparison and variance), balance sheet (against a comparison date), trial balance, general ledger detail, budget vs actual, expense analysis, sales by customer, revenue by month, receivables and payables aging, inventory valuation, job profitability and recurring revenue. Click an account to drill down to its ledger lines, and a ledger line to open the journal. Every report exports to CSV and has a print layout. Finance Managers and Company Admins can **save** a report with its filters; saved reports appear on the dashboard and in the library.
+
+## 10E. Annuity Billing (recurring contracts)
+
+Use **Annuity Billing** for anything billed on a schedule: support, rentals, licences, retainers.
+
+- **Contract:** customer, currency, billing cycle (monthly, quarterly, every 6 months, annually), start date (the first invoice), term in months, payment terms, and the lines billed each cycle (revenue account, quantity, price, tax).
+- **Renewal:** at the end of the term the contract renews for another term, with its **escalation %** applied to prices, or expires if auto-renew is off.
+- **Billing run:** choose a date, preview what is due, then run. Each billing period becomes one invoice, dated on the run date, that names the service period (e.g. "Support (15 Feb 2026 – 14 Mar 2026)"). Missed periods are caught up, and running twice does not bill twice. Tick **Post** to post the invoices straight to the ledger; otherwise they are drafts in Accounts Receivable.
+- **Pause / resume / cancel:** paused contracts are not billed, and resuming does not back-bill the paused months. Cancelling stops future invoices; invoices already raised are not changed.
+- **Scheduled billing:** `php artisan annuity:bill` runs daily at 06:00. It posts invoices only for contracts marked "post invoices automatically".
+
+The page shows monthly and annual recurring revenue (in base currency), what is due today, and renewals and expiries in the next 60 days.
+
+## 10F. BOM & Job Costing
+
+**Bills of materials.** A BOM lists the stock items (with scrap %) and the labour hours, labour rate and overhead rate needed to make a batch of a stock item. A component that has its own active BOM is a sub-assembly: its cost is rolled up from that BOM. The BOM page shows the full cost roll-up and the raw materials needed for any quantity, through all levels, against stock on hand. Circular BOMs are refused, and only one BOM per item is active.
+
+**Work orders.**
+1. **Create:** pick the BOM, quantity and warehouse.
+2. **Release:** fixes the material requirements and the standard unit cost, and warns about shortages.
+3. **Issue materials:** Dr Work in progress / Cr Inventory, at issue cost.
+4. **Complete:** enter the quantity made and the labour hours (defaults to the BOM hours). Labour and overhead are applied (Dr WIP / Cr Labour & overhead applied), then the finished goods go into stock at actual cost (Dr Inventory / Cr WIP).
+
+The page shows actual against standard unit cost and the variance.
+
+**Jobs.** For projects and customer jobs:
+- **Budget:** set a budget by materials, labour, overhead and other costs, and a tolerance before the job is flagged.
+- **Costs:** record costs as they happen. Materials are issued from stock, labour and overhead are hours × rate, and subcontract or other costs are credited to the account you choose (Accrued costs by default). Each cost posts to Work in progress immediately.
+- **Over budget:** a job beyond budget plus its tolerance is flagged **Over budget: review** until a Finance Manager acknowledges it.
+- **Invoicing:** creates a draft sales invoice, either fixed price (up to the contract value) or cost plus mark-up (the un-invoiced cost plus mark-up is suggested).
+- **Closing** (Finance Manager or Company Admin) moves the job's cost from WIP to cost of sales.
+
+The job profitability report compares budget, cost and invoiced revenue.
+
+Accounts used: Work in progress (1250), Labour & overhead applied (6190), Cost of sales for jobs (5000) and Accrued costs (2300). All of them can be changed under Account Mapping → Production & job costing.
+
+## 10G. AI/ML Automation
+
+All models run inside acc263 on your own ledger; nothing is sent to an outside AI service. Every result needs a person's decision. The pages are for Company Admins, Finance Managers and Auditors, except account suggestions, which everyone gets while entering supplier invoices.
+
+- **Forecasts.** Revenue, expenses and net cash flow for up to 12 months ahead, fitted to posted monthly totals (at least 4 months of history). The model is Holt's trend smoothing, with monthly seasonality from 24 months of history. Each month shows the forecast, an 80% likely range and a confidence score (100 − average past error). Review the forecast, then **Approve as plan** or reject it.
+- **Cash & collections.** acc263 learns how late each customer pays (and how late you pay each supplier) from settled invoices. It predicts when each open invoice will be paid and builds a 13-week cash outlook, flagging any week where cash is projected to go negative.
+- **Anomaly detection.** Scans the last 120 days for:
+  - unusual expense amounts for their account;
+  - possible duplicate supplier invoices (same number, or same total within 14 days);
+  - large round-number manual journals;
+  - manual journals posted at the weekend;
+  - manual journals posted by the person who prepared them;
+  - supplier invoice totals that deviate from Benford's law.
+
+  Confirm or dismiss each finding; dismissed findings are not raised again.
+- **Auto-coding.** While a supplier invoice line is being typed, acc263 suggests the expense account learned from how similar lines from that supplier were coded before. If no account is chosen and the model is at least 60% sure, it fills the account in. The Auto-coding page shows the model's measured accuracy on recent invoices.
+- **Schedule:** `php artisan ai:refresh` runs daily at 02:30 (anomaly scan; forecasts are refitted on the 1st of each month).
+
+The scheduled jobs (`annuity:bill`, `ai:refresh`, `billing:run`) need the Laravel scheduler running (`php artisan schedule:work`, or a cron entry for `schedule:run`).
+
 ## 11. Client Portal
 
 The client portal allows customers to access selected invoice and payment information.

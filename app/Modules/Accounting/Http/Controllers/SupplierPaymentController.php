@@ -37,11 +37,15 @@ class SupplierPaymentController extends Controller
             'post_now' => ['nullable', 'boolean'],
         ]);
         $payment = SupplierPayment::create($data);
-        // Supplier payments need approval: only approvers may post on capture.
-        if ($request->boolean('post_now') && $request->user()->can('approve')) {
+        // Supplier payments need approval: only approvers may post on capture, and company approval rules
+        // (thresholds, segregation of duties) apply as they do on the approval route.
+        $policy = app(\App\Modules\Accounting\Services\Approvals\ApprovalPolicy::class);
+        $blocked = $request->boolean('post_now') && $request->user()->can('approve') ? $policy->blockReason($request->user(), $payment, 'supplier_payment') : null;
+        if ($request->boolean('post_now') && $request->user()->can('approve') && !$blocked) {
             $postingService->postSupplierPayment($payment, isset($data['supplier_invoice_id']) ? SupplierInvoice::find($data['supplier_invoice_id']) : null);
+            $policy->record($payment->fresh(), 'supplier_payment', 'approved', $request->user());
         }
-        return back()->with('success', $payment->fresh()->status === 'posted' ? 'Supplier payment posted.' : 'Supplier payment saved and awaiting approval.');
+        return back()->with('success', $payment->fresh()->status === 'posted' ? 'Supplier payment posted.' : 'Supplier payment saved and awaiting approval.'.($blocked ? ' '.$blocked : ''));
     }
 
     public function post(CommercialPostingService $postingService, SupplierPayment $payment): RedirectResponse

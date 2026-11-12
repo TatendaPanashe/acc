@@ -6,6 +6,8 @@ use LogicException;
 
 class JournalLine extends AccountingModel
 {
+    protected static bool $audited = false;
+
     protected $table = 'accounting_journal_lines';
 
     protected $fillable = [

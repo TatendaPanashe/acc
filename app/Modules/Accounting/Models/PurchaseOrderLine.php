@@ -4,6 +4,8 @@ namespace App\Modules\Accounting\Models;
 
 class PurchaseOrderLine extends AccountingModel
 {
+    protected static bool $audited = false;
+
     protected $table = 'accounting_purchase_order_lines';
 
     protected $fillable = [

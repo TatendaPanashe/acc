@@ -131,6 +131,13 @@ return [
             'cogs' => ['Cost of goods sold', '5000'],
             'inventory_consumption' => ['Stores issued to departments', '6000'],
         ],
+        'Production & job costing' => [
+            'wip' => ['Work in progress (work orders & jobs)', '1250'],
+            'labour_applied' => ['Labour applied to production & jobs', '6190'],
+            'overhead_applied' => ['Overhead applied to production & jobs', '6190'],
+            'job_cost_of_sales' => ['Cost of sales for completed jobs', '5000'],
+            'accrued_costs' => ['Accrued costs (other job costs)', '2300'],
+        ],
         'Fixed assets' => [
             'fixed_assets' => ['Fixed assets at cost', '1500'],
             'accumulated_depreciation' => ['Accumulated depreciation', '1550'],

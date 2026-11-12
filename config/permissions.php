@@ -104,6 +104,19 @@ return [
         'accounting.banking.lines.journal' => 'approve',
         'accounting.banking.statements.complete' => 'approve',
 
+        // Approvals & audit: everyone sees their own submissions; approvers decide; admins set the rules.
+        'accounting.approvals-audit.index' => 'view',
+        'accounting.approvals-audit.reject' => 'approve',
+        'accounting.approvals-audit.rules.*' => ['read' => 'ledger.view', 'write' => 'company.manage'],
+        'accounting.approvals-audit.audit.*' => 'ledger.view',
+
+        // Job costing: closing a job finalises its cost into cost of sales.
+        'accounting.bom-job-costing.jobs.close' => 'approve',
+        'accounting.bom-job-costing.jobs.acknowledge' => 'approve',
+
+        // Account suggestions are used by accountants while they capture supplier invoices.
+        'accounting.ai-automation.suggest' => 'view',
+
         // Enterprise modules
         'accounting.banking.*' => ['module' => 'banking'],
         'accounting.fixed-assets.*' => ['module' => 'fixed-assets'],

@@ -4,6 +4,8 @@ namespace App\Modules\Accounting\Models;
 
 class StoresRequisitionLine extends AccountingModel
 {
+    protected static bool $audited = false;
+
     protected $table = 'accounting_stores_requisition_lines';
 
     protected $fillable = [

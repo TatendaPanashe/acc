@@ -95,7 +95,7 @@ Route::middleware(['auth', 'company.setup', 'permission'])->prefix('billing')->n
         Route::post('/sandbox/{payment}', 'sandboxComplete')->name('sandbox.complete');
     });
 
-Route::middleware(['auth', 'company.setup', 'subscription', 'permission', 'plan.feature'])->group(function () {
+Route::middleware(['auth', 'company.setup', 'subscription', 'permission', 'plan.feature', 'approval.rules'])->group(function () {
     Route::get('/dashboard', AccountingDashboardController::class)->name('dashboard');
 
     Route::resource('/company/team', TeamController::class)
@@ -209,12 +209,78 @@ Route::middleware(['auth', 'company.setup', 'subscription', 'permission', 'plan.
         Route::get('/fixed-assets', [ModuleController::class, 'fixedAssets'])->name('fixed-assets.index');
         Route::get('/fixed-assets/depreciation', [DepreciationController::class, 'index'])->name('fixed-assets.depreciation.index');
         Route::post('/fixed-assets/depreciation', [DepreciationController::class, 'store'])->name('fixed-assets.depreciation.store');
-        Route::get('/reporting', [ModuleController::class, 'reporting'])->name('reporting.index');
+        Route::prefix('reporting')->name('reporting.')->controller(\App\Modules\Accounting\Http\Controllers\ReportingController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/library', 'library')->name('library');
+            Route::get('/run/{type}', 'run')->name('run');
+            Route::post('/saved', 'storeSaved')->name('saved.store');
+            Route::get('/saved/{report}', 'openSaved')->name('saved.show');
+            Route::delete('/saved/{report}', 'destroySaved')->name('saved.destroy');
+        });
         Route::get('/crm', [ModuleController::class, 'crm'])->name('crm.index');
-        Route::get('/bom-job-costing', [ModuleController::class, 'bomJobCosting'])->name('bom-job-costing.index');
-        Route::get('/annuity-billing', [ModuleController::class, 'annuityBilling'])->name('annuity-billing.index');
-        Route::get('/approvals-audit', [ModuleController::class, 'approvalsAudit'])->name('approvals-audit.index');
-        Route::get('/ai-automation', [ModuleController::class, 'aiAutomation'])->name('ai-automation.index');
+        Route::prefix('bom-job-costing')->name('bom-job-costing.')->controller(\App\Modules\Accounting\Http\Controllers\BomJobCostingController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/boms', 'boms')->name('boms.index');
+            Route::get('/boms/create', 'createBom')->name('boms.create');
+            Route::post('/boms', 'storeBom')->name('boms.store');
+            Route::get('/boms/{bom}', 'showBom')->name('boms.show');
+            Route::get('/boms/{bom}/edit', 'editBom')->name('boms.edit');
+            Route::put('/boms/{bom}', 'updateBom')->name('boms.update');
+            Route::get('/work-orders', 'workOrders')->name('work-orders.index');
+            Route::post('/work-orders', 'storeWorkOrder')->name('work-orders.store');
+            Route::get('/work-orders/{workOrder}', 'showWorkOrder')->name('work-orders.show');
+            Route::post('/work-orders/{workOrder}/release', 'releaseWorkOrder')->name('work-orders.release');
+            Route::post('/work-orders/{workOrder}/issue', 'issueWorkOrder')->name('work-orders.issue');
+            Route::post('/work-orders/{workOrder}/complete', 'completeWorkOrder')->name('work-orders.complete');
+            Route::post('/work-orders/{workOrder}/cancel', 'cancelWorkOrder')->name('work-orders.cancel');
+            Route::get('/jobs', 'jobs')->name('jobs.index');
+            Route::get('/jobs/create', 'createJob')->name('jobs.create');
+            Route::post('/jobs', 'storeJob')->name('jobs.store');
+            Route::get('/jobs/{job}', 'showJob')->name('jobs.show');
+            Route::get('/jobs/{job}/edit', 'editJob')->name('jobs.edit');
+            Route::put('/jobs/{job}', 'updateJob')->name('jobs.update');
+            Route::post('/jobs/{job}/entries', 'storeEntry')->name('jobs.entries.store');
+            Route::post('/jobs/{job}/invoice', 'invoiceJob')->name('jobs.invoice');
+            Route::post('/jobs/{job}/close', 'closeJob')->name('jobs.close');
+            Route::post('/jobs/{job}/acknowledge', 'acknowledgeJob')->name('jobs.acknowledge');
+        });
+        Route::prefix('annuity-billing')->name('annuity-billing.')->controller(\App\Modules\Accounting\Http\Controllers\AnnuityBillingController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/contracts/create', 'create')->name('contracts.create');
+            Route::post('/contracts', 'store')->name('contracts.store');
+            Route::get('/contracts/{contract}', 'show')->name('contracts.show');
+            Route::get('/contracts/{contract}/edit', 'edit')->name('contracts.edit');
+            Route::put('/contracts/{contract}', 'update')->name('contracts.update');
+            Route::post('/contracts/{contract}/pause', 'pause')->name('contracts.pause');
+            Route::post('/contracts/{contract}/resume', 'resume')->name('contracts.resume');
+            Route::post('/contracts/{contract}/cancel', 'cancel')->name('contracts.cancel');
+            Route::get('/runs', 'preview')->name('runs.preview');
+            Route::post('/runs', 'runBilling')->name('runs.store');
+            Route::get('/runs/{run}', 'showRun')->name('runs.show');
+        });
+        Route::prefix('approvals-audit')->name('approvals-audit.')->controller(\App\Modules\Accounting\Http\Controllers\ApprovalsAuditController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/{type}/{id}/reject', 'reject')->whereNumber('id')->name('reject');
+            Route::get('/rules', 'rules')->name('rules.index');
+            Route::post('/rules', 'storeRule')->name('rules.store');
+            Route::put('/rules/{rule}', 'updateRule')->name('rules.update');
+            Route::delete('/rules/{rule}', 'destroyRule')->name('rules.destroy');
+            Route::get('/audit-trail', 'auditLog')->name('audit.index');
+            Route::get('/audit-trail/export', 'auditExport')->name('audit.export');
+            Route::get('/audit-trail/{log}', 'auditShow')->whereNumber('log')->name('audit.show');
+        });
+        Route::prefix('ai-automation')->name('ai-automation.')->controller(\App\Modules\Accounting\Http\Controllers\AiAutomationController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/forecasts', 'forecasts')->name('forecasts.index');
+            Route::post('/forecasts', 'generateForecasts')->name('forecasts.generate');
+            Route::post('/forecasts/review', 'reviewForecasts')->name('forecasts.review');
+            Route::get('/collections', 'collections')->name('collections');
+            Route::get('/insights', 'insights')->name('insights.index');
+            Route::post('/insights/scan', 'runDetection')->name('insights.run');
+            Route::post('/insights/{insight}/review', 'reviewInsight')->name('insights.review');
+            Route::get('/auto-coding', 'autoCoding')->name('auto-coding');
+            Route::get('/suggest-account', 'suggest')->middleware('throttle:120,1')->name('suggest');
+        });
         Route::get('/client-portal', [ModuleController::class, 'clientPortal'])->name('client-portal.index');
         Route::get('/revenue-recognition', [ModuleController::class, 'revenueRecognition'])->name('revenue-recognition.index');
         Route::get('/einvoicing-tax-mesh', [ModuleController::class, 'einvoicingTaxMesh'])->name('einvoicing-tax-mesh.index');

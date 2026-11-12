@@ -11,3 +11,5 @@ Artisan::command('inspire', function () {
 
 // Subscription lifecycle (requires the Laravel scheduler: `php artisan schedule:work` or a cron entry).
 \Illuminate\Support\Facades\Schedule::command('billing:run')->hourly()->withoutOverlapping();
+\Illuminate\Support\Facades\Schedule::command('annuity:bill')->dailyAt('06:00')->withoutOverlapping();
+\Illuminate\Support\Facades\Schedule::command('ai:refresh')->dailyAt('02:30')->withoutOverlapping();

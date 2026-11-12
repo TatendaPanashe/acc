@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \App\Http\Middleware\EnforceRoutePermission::class,
             'subscription' => \App\Http\Middleware\EnsureSubscriptionIsActive::class,
             'plan.feature' => \App\Http\Middleware\RequirePlanFeature::class,
+            'approval.rules' => \App\Http\Middleware\EnforceApprovalRules::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

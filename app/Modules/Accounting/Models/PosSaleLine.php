@@ -4,6 +4,8 @@ namespace App\Modules\Accounting\Models;
 
 class PosSaleLine extends AccountingModel
 {
+    protected static bool $audited = false;
+
     protected $table = 'accounting_pos_sale_lines';
 
     protected $fillable = [

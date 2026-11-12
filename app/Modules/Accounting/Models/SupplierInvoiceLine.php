@@ -4,6 +4,8 @@ namespace App\Modules\Accounting\Models;
 
 class SupplierInvoiceLine extends AccountingModel
 {
+    protected static bool $audited = false;
+
     protected $table = 'accounting_supplier_invoice_lines';
 
     protected $fillable = [

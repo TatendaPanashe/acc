@@ -4,6 +4,8 @@ namespace App\Modules\Accounting\Models;
 
 class BankStatementLine extends AccountingModel
 {
+    protected static bool $audited = false;
+
     protected $table = 'accounting_bank_statement_lines';
 
     protected $fillable = ['company_id', 'bank_statement_id', 'transaction_date', 'description', 'reference', 'amount', 'journal_line_id'];

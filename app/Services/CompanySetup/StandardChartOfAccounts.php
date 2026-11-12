@@ -18,6 +18,7 @@ class StandardChartOfAccounts
         ['1000', 'Cash and Bank', 'asset', 'debit', true],
         ['1100', 'Accounts Receivable', 'asset', 'debit', true],
         ['1200', 'Inventory', 'asset', 'debit', true],
+        ['1250', 'Work in Progress', 'asset', 'debit', false],
         ['1300', 'Prepayments', 'asset', 'debit', false],
         ['1500', 'Property, Plant and Equipment', 'asset', 'debit', true],
         ['1550', 'Accumulated Depreciation', 'asset', 'credit', false],
@@ -41,6 +42,7 @@ class StandardChartOfAccounts
         ['6300', 'Utilities', 'expense', 'debit', false],
         ['6400', 'Bank Charges', 'expense', 'debit', false],
         ['6500', 'Depreciation', 'expense', 'debit', false],
+        ['6190', 'Labour & Overhead Applied', 'expense', 'credit', false],
         ['6600', 'Exchange Losses', 'expense', 'debit', false],
     ];
 

@@ -44,6 +44,17 @@ class InventoryPostingService
 
     private function post(Model $source, string $entryNumber, mixed $date, string $debitKey, string $creditKey, float $value, string $memo): ?JournalEntry
     {
+        return $this->transfer($source, $entryNumber, $date, $debitKey, $creditKey, $value, $memo, 'inventory');
+    }
+
+    /**
+     * Posts a two-line entry in base currency. $debit / $credit are account-mapping keys (string)
+     * or account ids (int). Returns null for a zero amount.
+     */
+    public function transfer(Model $source, string $entryNumber, mixed $date, string|int $debit, string|int $credit, float $value, string $memo, string $module = 'production'): ?JournalEntry
+    {
+        $debitKey = $debit;
+        $creditKey = $credit;
         $value = round($value, 2);
         if ($value <= 0) {
             return null;
@@ -53,7 +64,7 @@ class InventoryPostingService
         $entry = new JournalEntry([
             'entry_number' => $entryNumber,
             'entry_date' => $date,
-            'source_module' => 'inventory',
+            'source_module' => $module,
             'source_type' => $source::class,
             'source_id' => $source->getKey(),
             'currency' => $this->rates->baseCurrency($company),
@@ -67,7 +78,7 @@ class InventoryPostingService
         foreach ([[$debitKey, $value, 0], [$creditKey, 0, $value]] as [$key, $debit, $credit]) {
             $entry->lines()->create([
                 'company_id' => $company,
-                'account_id' => $this->mappings->account($key, $company)->id,
+                'account_id' => is_int($key) ? $key : $this->mappings->account($key, $company)->id,
                 'description' => $memo,
                 'debit' => $debit,
                 'credit' => $credit,
