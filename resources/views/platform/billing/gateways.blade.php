@@ -28,8 +28,9 @@
                     </div>
                 @endforeach
             </div>
-            @if(in_array($gateway->provider, ['paynow', 'stripe']))
+            @if(in_array($gateway->provider, ['pesepay', 'paynow', 'stripe']))
                 <p class="hint">Webhook / result URL: {{ route('billing.webhooks', $gateway->provider) }}</p>
+                @if($gateway->provider === 'pesepay')<p class="hint">Test mode uses the Pesepay sandbox (no real money). Every callback is re-checked with Pesepay before a payment is accepted.</p>@endif
             @elseif($gateway->provider === 'sandbox')
                 <p class="hint">Lets testers simulate successful and failed payments. Cannot be enabled in production.</p>
             @elseif($gateway->provider === 'bank_transfer')

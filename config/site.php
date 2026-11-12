@@ -4,7 +4,7 @@
 | Public website content. Contact details come from .env and are only shown when set.
 */
 return [
-    'email' => env('SITE_CONTACT_EMAIL', env('BILLING_SALES_EMAIL', 'sales@acc263.example')),
+    'email' => env('SITE_CONTACT_EMAIL', env('BILLING_SALES_EMAIL', 'info@kodomotech.org')),
     'phone' => env('SITE_CONTACT_PHONE'),
     'whatsapp' => env('SITE_CONTACT_WHATSAPP'),
     'address' => env('SITE_CONTACT_ADDRESS'),

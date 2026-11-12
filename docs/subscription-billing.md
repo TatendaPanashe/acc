@@ -38,13 +38,14 @@ Access is decided from dates on every request, so a workspace locks on time even
 2. **Mail** – set `MAIL_MAILER` and SMTP settings; reminders go to each tenant's Company Admins.
 3. **APP_URL** – must be the public HTTPS address; provider return and webhook URLs are built from it.
 4. **Payment gateways** (System → Payment gateways):
+   - **Pesepay** (EcoCash, InnBucks, ZimSwitch, Visa/Mastercard): Integration key and Encryption key (16, 24 or 32 characters) from the Pesepay dashboard. Test mode uses the Pesepay sandbox; switch to Live for real payments. Result URL (sent automatically with each payment): `https://<your-domain>/billing/webhooks/pesepay`. Keys can also be supplied as `PESEPAY_INTEGRATION_KEY` / `PESEPAY_ENCRYPTION_KEY` in `.env`; keys saved on the page take precedence. Pesepay callbacks are not signed, so each one is re-checked with Pesepay's API before a payment is accepted; the amount and currency must match the invoice.
    - **Paynow**: Integration ID and key from the Paynow merchant portal; in test mode also the merchant email. Result URL: `https://<your-domain>/billing/webhooks/paynow`.
    - **Stripe**: secret key and webhook signing secret. Add a webhook endpoint `https://<your-domain>/billing/webhooks/stripe` for `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed` and `checkout.session.expired`.
    - **Bank transfer**: bank details shown to customers (or set `BILLING_BANK_*` in `.env`). Confirm receipts on the tenant's page (Record payment).
    - **Sandbox**: test-only; cannot be enabled in production. Disable it before launch.
 5. Optional `.env`: `BILLING_SALES_EMAIL` (Enterprise "Contact us").
 
-The Paynow and Stripe integrations are implemented against their documented APIs and covered by tests with simulated responses; run an end-to-end payment in each provider's test mode before enabling live mode.
+The Pesepay, Paynow and Stripe integrations are implemented against their documented APIs and covered by tests with simulated responses; run an end-to-end payment in each provider's test mode before enabling live mode.
 
 ## Feature gating
 

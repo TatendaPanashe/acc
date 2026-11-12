@@ -28,6 +28,12 @@ return [
         'key' => env('RESEND_KEY'),
     ],
 
+    // Optional fallback for the Pesepay gateway; keys saved on the platform Payment gateways page take precedence.
+    'pesepay' => [
+        'integration_key' => env('PESEPAY_INTEGRATION_KEY'),
+        'encryption_key' => env('PESEPAY_ENCRYPTION_KEY'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

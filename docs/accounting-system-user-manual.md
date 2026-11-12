@@ -108,7 +108,7 @@ Annual billing costs 10 × the monthly price (two months free).
 
 - In the last 5 days of the trial a banner reminds everyone it is ending.
 - **When the trial ends the workspace locks.** The Company Admin is taken to **Company → Billing & Plan** to choose a plan; other users see a "subscription inactive" page. No data is deleted.
-- To subscribe, choose a plan (monthly or annual, optional coupon) and pay the invoice with one of the payment methods shown (Paynow / EcoCash, card, or bank transfer). The subscription activates as soon as the payment provider confirms the payment; a failed payment leaves the invoice open to try again.
+- To subscribe, choose a plan (monthly or annual, optional coupon) and pay the invoice with one of the payment methods shown (Pesepay or Paynow for EcoCash, InnBucks, ZimSwitch and Visa/Mastercard, card, or bank transfer). The subscription activates as soon as the payment provider confirms the payment; a failed payment leaves the invoice open to try again.
 - A renewal invoice is issued 7 days before each renewal date and emailed to the Company Admins. If it is unpaid on the renewal date the account is **past due** and has a **7-day grace period** (a red banner is shown). After that the workspace is **suspended** (locked to Billing) until the invoice is paid.
 - Screens that belong to a higher plan (for example Bank Reconciliation on Essential) show an upgrade message. Adding users or branches beyond the plan limit is refused with an upgrade message.
 

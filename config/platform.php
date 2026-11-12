@@ -7,6 +7,7 @@ return [
     'default_plan' => 'professional',
 
     'payment_providers' => [
+        'pesepay' => 'Pesepay',
         'paynow' => 'Paynow',
         'ecocash' => 'EcoCash',
         'innbucks' => 'InnBucks',

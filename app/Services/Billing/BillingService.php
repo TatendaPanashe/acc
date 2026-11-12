@@ -13,6 +13,7 @@ use App\Models\Platform\Subscription;
 use App\Services\Billing\Gateways\BankTransferGateway;
 use App\Services\Billing\Gateways\GatewayDriver;
 use App\Services\Billing\Gateways\PaynowGateway;
+use App\Services\Billing\Gateways\PesepayGateway;
 use App\Services\Billing\Gateways\SandboxGateway;
 use App\Services\Billing\Gateways\StripeGateway;
 use App\Services\Platform\SubscriptionService;
@@ -28,6 +29,7 @@ use Illuminate\Validation\ValidationException;
 class BillingService
 {
     public const DRIVERS = [
+        'pesepay' => PesepayGateway::class,
         'paynow' => PaynowGateway::class,
         'stripe' => StripeGateway::class,
         'bank_transfer' => BankTransferGateway::class,

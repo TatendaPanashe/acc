@@ -18,6 +18,7 @@ use Illuminate\View\View;
 class PlatformBillingController extends Controller
 {
     public const GATEWAY_FIELDS = [
+        'pesepay' => ['integration_key' => 'Integration key|secret', 'encryption_key' => 'Encryption key (16, 24 or 32 characters)|secret'],
         'paynow' => ['integration_id' => 'Integration ID', 'integration_key' => 'Integration key|secret', 'auth_email' => 'Merchant email (test mode)'],
         'stripe' => ['secret_key' => 'Secret key|secret', 'webhook_secret' => 'Webhook signing secret|secret'],
         'bank_transfer' => ['bank' => 'Bank', 'account_name' => 'Account name', 'account_number' => 'Account number', 'branch' => 'Branch'],
@@ -116,6 +117,11 @@ class PlatformBillingController extends Controller
 
         if ($gateway->provider === 'sandbox' && app()->isProduction() && $request->boolean('status')) {
             return back()->with('error', 'The sandbox gateway cannot be enabled in production.');
+        }
+
+        $encryptionKey = trim((string) ($data['config']['encryption_key'] ?? ''));
+        if ($gateway->provider === 'pesepay' && $encryptionKey !== '' && !in_array(strlen($encryptionKey), [16, 24, 32], true)) {
+            return back()->withErrors(['config.encryption_key' => 'The Pesepay encryption key must be 16, 24 or 32 characters. Copy it exactly from the Pesepay dashboard.'])->withInput();
         }
 
         // Blank secret fields keep the stored value.
