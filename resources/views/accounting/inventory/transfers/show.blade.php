@@ -1,0 +1,6 @@
+@extends('layouts.main')
+@section('title', 'Transfer Order')
+@section('content')
+@include('accounting.partials.page-header', ['title' => 'Transfer '.$transfer->transfer_number, 'section' => 'Inventory & Order Entry'])
+<div class="card"><div class="header d-flex justify-content-between align-items-center"><h2><strong>{{ ucfirst(str_replace('_', ' ', $transfer->status)) }}</strong> {{ $transfer->fromWarehouse?->code }} to {{ $transfer->toWarehouse?->code }}</h2><div>@if($transfer->status === 'draft')<form class="d-inline" method="POST" action="{{ route('accounting.inventory.transfer-orders.ship', $transfer) }}">@csrf<button class="btn btn-success"><i class="fas fa-truck"></i> Ship</button></form>@endif @if($transfer->status === 'in_transit')<form class="d-inline" method="POST" action="{{ route('accounting.inventory.transfer-orders.receive', $transfer) }}">@csrf<button class="btn btn-primary"><i class="fas fa-check"></i> Receive</button></form>@endif</div></div><div class="body table-responsive"><table class="table"><thead><tr><th>Item</th><th>Name</th><th class="text-end">Quantity</th></tr></thead><tbody>@foreach($transfer->lines as $line)<tr><td>{{ $line->item?->sku }}</td><td>{{ $line->item?->name }}</td><td class="text-end">{{ number_format($line->quantity, 4) }}</td></tr>@endforeach</tbody></table></div></div>
+@endsection

@@ -1,0 +1,662 @@
+:root {
+    --acc-primary: #3157d5;
+    --acc-primary-dark: #2444ad;
+    --acc-primary-soft: #eef2ff;
+    --acc-success: #16865f;
+    --acc-danger: #d33f49;
+    --acc-warning: #b76b00;
+    --acc-ink: #1d2939;
+    --acc-muted: #667085;
+    --acc-border: #e3e8ef;
+    --acc-surface: #ffffff;
+    --acc-canvas: #f5f7fb;
+    --acc-radius: 8px;
+    --acc-shadow: 0 4px 18px rgba(31, 42, 68, 0.07);
+}
+
+body.acc-app {
+    background: var(--acc-canvas);
+    color: var(--acc-ink);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+}
+
+.acc-app section.content {
+    background: var(--acc-canvas);
+    min-height: calc(100vh - 60px);
+}
+
+.acc-app section.content > .container-fluid {
+    max-width: 1680px;
+    padding: 28px 28px 44px;
+}
+
+.acc-app .block-header,
+.acc-app .pagetitle {
+    margin: 0 0 22px;
+}
+
+.acc-app .block-header h2,
+.acc-app .pagetitle h1 {
+    color: var(--acc-ink) !important;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.acc-app .block-header p,
+.acc-app .pagetitle p {
+    color: var(--acc-muted) !important;
+    margin-top: 5px;
+}
+
+.acc-app .card {
+    background: var(--acc-surface);
+    border: 1px solid var(--acc-border);
+    border-radius: var(--acc-radius);
+    box-shadow: var(--acc-shadow);
+    margin-bottom: 24px;
+}
+
+.acc-app .card > .card-header,
+.acc-app .card > .header {
+    background: #fff;
+    border-bottom: 1px solid var(--acc-border);
+    border-radius: var(--acc-radius) var(--acc-radius) 0 0;
+    min-height: 62px;
+    padding: 16px 20px !important;
+}
+
+.acc-app .card > .card-body,
+.acc-app .card > .body {
+    padding: 20px !important;
+}
+
+.acc-app .card .header h2,
+.acc-app .card .header h4,
+.acc-app .card .card-header h2,
+.acc-app .card .card-header h4,
+.acc-app .card-title {
+    color: var(--acc-ink);
+    font-size: 17px;
+    font-weight: 650;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.acc-app .text-muted,
+.acc-app small.text-muted {
+    color: var(--acc-muted) !important;
+}
+
+.acc-app label,
+.acc-app .form-label {
+    color: #344054;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.acc-app .form-control,
+.acc-app .form-select {
+    background-color: #fff;
+    border: 1px solid #cfd7e3;
+    border-radius: 8px;
+    box-shadow: none;
+    color: var(--acc-ink);
+    font-size: 14px;
+    min-height: 42px;
+    padding: 9px 12px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.acc-app textarea.form-control {
+    min-height: 92px;
+}
+
+.acc-app .form-control:focus,
+.acc-app .form-select:focus {
+    border-color: #7792ec;
+    box-shadow: 0 0 0 3px rgba(49, 87, 213, 0.12);
+}
+
+.acc-app .form-control[readonly],
+.acc-app .form-control:disabled,
+.acc-app .form-select:disabled {
+    background: #f2f4f7;
+    color: #475467;
+}
+
+.acc-app .invalid-feedback {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.acc-app .btn {
+    align-items: center;
+    border-radius: 8px;
+    display: inline-flex;
+    font-size: 13px;
+    font-weight: 600;
+    gap: 6px;
+    justify-content: center;
+    min-height: 38px;
+    padding: 8px 15px;
+    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
+    white-space: normal;
+}
+
+.acc-app .btn:hover {
+    transform: translateY(-1px);
+}
+
+.acc-app .btn-primary {
+    background: var(--acc-primary);
+    border-color: var(--acc-primary);
+}
+
+.acc-app .btn-primary:hover,
+.acc-app .btn-primary:focus {
+    background: var(--acc-primary-dark);
+    border-color: var(--acc-primary-dark);
+    box-shadow: 0 4px 10px rgba(49, 87, 213, 0.2);
+}
+
+.acc-app .btn-success {
+    background: var(--acc-success);
+    border-color: var(--acc-success);
+}
+
+.acc-app .btn-sm {
+    min-height: 32px;
+    padding: 5px 10px;
+}
+
+.acc-app .alert {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    box-shadow: none;
+    padding: 13px 16px;
+}
+
+.acc-app .alert-danger {
+    background: #fff1f2;
+    border-color: #fecdd3;
+    color: #9f1239;
+}
+
+.acc-app .alert-success {
+    background: #ecfdf3;
+    border-color: #a7f3d0;
+    color: #166534;
+}
+
+.acc-app .alert-warning {
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #92400e;
+}
+
+.acc-app .alert-info {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #101828;
+}
+
+.acc-app .alert,
+.acc-app .alert p,
+.acc-app .alert li,
+.acc-app .alert small,
+.acc-app .alert strong,
+.acc-app .alert .text-muted,
+.acc-app .alert .alert-heading {
+    color: #101828 !important;
+}
+
+.acc-app .alert a:not(.btn) {
+    color: #174ea6 !important;
+    text-decoration: underline;
+}
+
+.acc-app .accordion {
+    --bs-accordion-border-color: var(--acc-border);
+    --bs-accordion-border-radius: 10px;
+    --bs-accordion-inner-border-radius: 10px;
+}
+
+.acc-app .accordion-item {
+    border: 1px solid var(--acc-border);
+    border-radius: 10px !important;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.acc-app .accordion-button {
+    background: #fff;
+    color: var(--acc-ink);
+    font-size: 14px;
+    font-weight: 650;
+    min-height: 56px;
+    padding: 15px 18px;
+}
+
+.acc-app .accordion-button:not(.collapsed) {
+    background: var(--acc-primary-soft);
+    box-shadow: inset 4px 0 0 var(--acc-primary);
+    color: var(--acc-primary-dark);
+}
+
+.acc-app .accordion-button:focus {
+    box-shadow: inset 4px 0 0 var(--acc-primary);
+}
+
+.acc-app .accordion-body {
+    background: #fbfcfe;
+    padding: 20px;
+}
+
+.acc-app .accordion-body > .card {
+    box-shadow: none;
+}
+
+.acc-app .table-responsive {
+    border: 1px solid var(--acc-border);
+    border-radius: 10px;
+    overflow-x: auto;
+}
+
+.acc-app .table {
+    margin-bottom: 0;
+    width: 100%;
+}
+
+.acc-app .table > :not(caption) > * > * {
+    border-bottom-color: #edf0f4;
+    padding: 12px 14px;
+    vertical-align: middle;
+}
+
+.acc-app .table thead th {
+    background: #f8fafc;
+    color: #475467;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.acc-app .table td,
+.acc-app .table th {
+    overflow-wrap: anywhere;
+}
+
+.acc-app .table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.acc-app .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background: #fcfdff;
+    --bs-table-accent-bg: #fcfdff;
+}
+
+.acc-app .badge {
+    align-items: center;
+    border-radius: 999px;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 650;
+    justify-content: center;
+    line-height: 1.2;
+    padding: 5px 8px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.acc-app hr {
+    border-color: var(--acc-border);
+    opacity: 1;
+}
+
+.acc-app .modal-content {
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 20px 45px rgba(16, 24, 40, 0.18);
+}
+
+.acc-app .modal-header,
+.acc-app .modal-footer {
+    border-color: var(--acc-border);
+    padding: 16px 20px;
+}
+
+.acc-app .modal-body {
+    padding: 20px;
+}
+
+.acc-app .pagination {
+    margin: 20px 0 0;
+}
+
+.acc-app .page-link {
+    border-color: var(--acc-border);
+    color: var(--acc-primary);
+}
+
+.acc-app .sidebar .menu .list .header {
+    color: #98a2b3;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+}
+
+.acc-app .sidebar .menu .list > li > a,
+.acc-app .sidebar .menu .ml-menu li a {
+    border-radius: 8px;
+    margin: 2px 8px;
+}
+
+@media (max-width: 767.98px) {
+    .acc-app section.content > .container-fluid {
+        padding: 18px 14px 32px;
+    }
+
+    .acc-app .card > .card-header,
+    .acc-app .card > .header,
+    .acc-app .card > .card-body,
+    .acc-app .card > .body,
+    .acc-app .accordion-body {
+        padding: 15px !important;
+    }
+
+    .acc-app .d-flex.justify-content-between {
+        align-items: stretch !important;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
+
+/* Accounting dashboard */
+.acc-app .info-box-5 {
+    min-height: 132px;
+}
+
+.acc-app .info-box-5 h5,
+.acc-app .info-box-5 h2 {
+    color: #fff;
+}
+
+.acc-app .card-icon svg,
+.acc-app .acc-module-icon svg {
+    display: block;
+}
+
+.acc-app .acc-module-grid {
+    row-gap: 16px;
+}
+
+.acc-app .acc-module-tile {
+    align-items: flex-start;
+    background: #fff;
+    border: 1px solid var(--acc-border);
+    border-radius: 8px;
+    color: var(--acc-ink);
+    display: flex;
+    gap: 14px;
+    min-height: 124px;
+    padding: 16px;
+    text-decoration: none;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+
+.acc-app .acc-module-tile:hover {
+    border-color: #b9c7ee;
+    box-shadow: 0 10px 26px rgba(31, 42, 68, .08);
+    color: var(--acc-ink);
+    transform: translateY(-1px);
+}
+
+.acc-app .acc-module-icon {
+    align-items: center;
+    background: var(--acc-primary-soft);
+    border-radius: 8px;
+    color: var(--acc-primary);
+    display: inline-flex;
+    flex: 0 0 38px;
+    height: 38px;
+    justify-content: center;
+    width: 38px;
+}
+
+.acc-app .acc-module-tile strong {
+    display: block;
+    font-size: 14px;
+    line-height: 1.3;
+    margin-bottom: 6px;
+}
+
+.acc-app .acc-module-tile small {
+    color: var(--acc-muted);
+    display: block;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+/* Keep every single-line application form control at Bootstrap's normal size. */
+.acc-app form input.form-control:not([type="file"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+.acc-app form input[type="text"],
+.acc-app form input[type="email"],
+.acc-app form input[type="password"],
+.acc-app form input[type="number"],
+.acc-app form input[type="date"],
+.acc-app form input[type="month"],
+.acc-app form input[type="time"],
+.acc-app form input[type="tel"],
+.acc-app form input[type="url"],
+.acc-app form select.form-control:not([multiple]),
+.acc-app form select.form-select:not([multiple]) {
+    box-sizing: border-box;
+    font-size: 14px !important;
+    height: 38px !important;
+    line-height: 1.5 !important;
+    min-height: 38px !important;
+    padding: 6px 12px !important;
+}
+
+.acc-app form .input-group > .input-group-text {
+    align-items: center;
+    display: flex;
+    font-size: 14px;
+    height: 38px;
+    line-height: 1.5;
+    padding: 6px 12px;
+}
+
+/* Semantic/status pills always use centered white labels. */
+.acc-app .badge.bg-primary,
+.acc-app .badge.bg-secondary,
+.acc-app .badge.bg-success,
+.acc-app .badge.bg-danger,
+.acc-app .badge.bg-warning,
+.acc-app .badge.bg-info,
+.acc-app .badge.badge-primary,
+.acc-app .badge.badge-secondary,
+.acc-app .badge.badge-success,
+.acc-app .badge.badge-danger,
+.acc-app .badge.badge-warning,
+.acc-app .badge.badge-info {
+    align-items: center;
+    color: #fff !important;
+    display: inline-flex;
+    justify-content: center;
+    line-height: 1.2;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Final acc263 shell overrides for the inherited admin template. */
+.acc-app .navbar {
+    min-height: 60px;
+    z-index: 1000;
+}
+
+.acc-app .navbar .navbar-brand {
+    align-items: center;
+    display: inline-flex;
+    gap: 10px;
+    height: 60px;
+    letter-spacing: 0;
+}
+
+.acc-app .navbar .navbar-brand img {
+    height: 34px;
+    max-width: 42px;
+    object-fit: contain;
+}
+
+.acc-app .navbar .logo-name {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.acc-app .navbar .container-fluid {
+    align-items: center;
+    display: flex;
+    min-height: 60px;
+}
+
+.acc-app .navbar-header {
+    align-items: center;
+    display: flex;
+    min-height: 60px;
+}
+
+.acc-app .navbar-collapse {
+    align-items: center;
+}
+
+.acc-app .navbar .navbar-nav {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+}
+
+.acc-app .navbar .navbar-nav > li > a,
+.acc-app .navbar .navbar-nav > li > .dropdown-toggle,
+.acc-app .navbar .navbar-nav > li > button {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+}
+
+.acc-app .sidebar {
+    top: 60px;
+}
+
+.acc-app section.content {
+    margin-top: 70px;
+}
+
+.acc-app .container-fluid {
+    width: 100%;
+}
+
+.acc-app .row {
+    margin-left: -12px;
+    margin-right: -12px;
+}
+
+.acc-app .row > [class*="col-"] {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.acc-app .card.l-bg-purple,
+.acc-app .card.l-bg-blue-dark,
+.acc-app .card.l-bg-green-dark,
+.acc-app .card.l-bg-orange-dark,
+.acc-app .card.l-bg-green,
+.acc-app .card.l-bg-cyan,
+.acc-app .card.l-bg-orange {
+    border: 0;
+}
+
+.acc-app .table-responsive > .table {
+    min-width: 680px;
+}
+
+.acc-app .breadcrumb {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 0;
+}
+
+.acc-app .breadcrumb .page-title {
+    margin-right: 8px;
+}
+
+.acc-app .breadcrumb-item {
+    align-items: center;
+    display: inline-flex;
+    min-width: 0;
+}
+
+.acc-app .breadcrumb-item a {
+    align-items: center;
+    display: inline-flex;
+    gap: 5px;
+}
+
+@media (max-width: 1169px) {
+    .acc-app section.content {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .acc-app section.content {
+        margin-top: 64px;
+    }
+
+    .acc-app .navbar .container-fluid,
+    .acc-app .navbar-header {
+        min-height: 56px;
+    }
+
+    .acc-app .navbar .logo-name {
+        font-size: 18px;
+    }
+
+    .acc-app .navbar .navbar-nav {
+        align-items: stretch;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .acc-app .navbar .navbar-nav > li {
+        width: 100%;
+    }
+
+    .acc-app .navbar .navbar-nav > li > a,
+    .acc-app .navbar .navbar-nav > li > .dropdown-toggle,
+    .acc-app .navbar .navbar-nav > li > button {
+        justify-content: flex-start;
+        min-height: 42px;
+        width: 100%;
+    }
+
+    .acc-app .acc-module-tile {
+        min-height: auto;
+    }
+}

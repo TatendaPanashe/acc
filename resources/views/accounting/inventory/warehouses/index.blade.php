@@ -1,0 +1,8 @@
+@extends('layouts.main')
+@section('title', 'Warehouses')
+@section('content')
+@include('accounting.partials.page-header', ['title' => 'Warehouses', 'section' => 'Inventory & Order Entry'])
+<div class="row"><div class="col-lg-8"><div class="card"><div class="header"><h2><strong>Warehouse</strong> Master</h2></div><div class="body table-responsive"><table class="table table-striped"><thead><tr><th>Code</th><th>Name</th><th>Location</th><th>Status</th><th></th></tr></thead><tbody>
+@forelse($warehouses as $warehouse)<tr><td>{{ $warehouse->code }}</td><td>{{ $warehouse->name }}</td><td>{{ $warehouse->location }}</td><td>{{ $warehouse->status ? 'Active' : 'Inactive' }}</td><td class="text-end"><a href="{{ route('accounting.inventory.warehouses.edit', $warehouse) }}" class="btn btn-primary btn-sm"><i class="fas fa-pen"></i></a><form class="d-inline" method="POST" action="{{ route('accounting.inventory.warehouses.destroy', $warehouse) }}">@csrf @method('DELETE')<button class="btn btn-light btn-sm"><i class="fas fa-ban"></i></button></form></td></tr>@empty<tr><td colspan="5" class="text-muted">No warehouses have been created.</td></tr>@endforelse
+</tbody></table>{{ $warehouses->links() }}</div></div></div><div class="col-lg-4"><div class="card"><div class="header"><h2><strong>New</strong> Warehouse</h2></div><div class="body"><form method="POST" action="{{ route('accounting.inventory.warehouses.store') }}">@csrf @include('accounting.inventory.warehouses._form', ['warehouse' => new \App\Modules\Accounting\Models\Warehouse(['status' => true])])<button class="btn btn-primary"><i class="fas fa-save"></i> Save Warehouse</button></form></div></div></div></div>
+@endsection

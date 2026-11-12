@@ -1,0 +1,66 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "desktop": "electron desktop/main.cjs",
+        "desktop:dev": "concurrently -k -n vite,desktop -c \"#93c5fd,#c4b5fd\" \"npm run dev\" \"wait-on http://127.0.0.1:5173 && electron desktop/main.cjs\"",
+        "desktop:dist": "npm run build && electron-builder --win nsis portable"
+    },
+    "devDependencies": {
+        "@popperjs/core": "^2.11.6",
+        "@tailwindcss/vite": "^4.0.0",
+        "axios": "^1.7.4",
+        "bootstrap": "^5.2.3",
+        "concurrently": "^9.0.1",
+        "electron": "^33.4.11",
+        "electron-builder": "^25.1.8",
+        "laravel-vite-plugin": "^1.2.0",
+        "sass": "^1.56.1",
+        "tailwindcss": "^4.0.0",
+        "vite": "^6.0.11",
+        "wait-on": "^8.0.1"
+    },
+    "main": "desktop/main.cjs",
+    "build": {
+        "appId": "com.acc263.desktop",
+        "productName": "acc263",
+        "asar": false,
+        "directories": {
+            "output": "dist/windows"
+        },
+        "files": [
+            "desktop/**/*",
+            "app/**/*",
+            "bootstrap/**/*",
+            "config/**/*",
+            "database/**/*",
+            "public/**/*",
+            "resources/views/**/*",
+            "routes/**/*",
+            "storage/**/*",
+            "vendor/**/*",
+            "artisan",
+            "composer.json",
+            "composer.lock",
+            ".env"
+        ],
+        "extraMetadata": {
+            "main": "desktop/main.cjs"
+        },
+        "win": {
+            "target": [
+                "nsis",
+                "portable"
+            ]
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true
+        }
+    },
+    "dependencies": {
+        "zimra-fdms": "^0.4.0"
+    }
+}
