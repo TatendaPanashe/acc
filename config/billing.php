@@ -50,5 +50,6 @@ return [
         'accounting.ar.invoices.zimra' => 'tax_management',
         'accounting.einvoicing-tax-mesh.*' => 'tax_management',
         'accounting.approvals-audit.audit.*' => 'audit_trail',
+        'accounting.payroll.*' => 'payroll',
     ],
 ];

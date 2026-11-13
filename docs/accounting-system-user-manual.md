@@ -569,6 +569,67 @@ All models run inside acc263 on your own ledger; nothing is sent to an outside A
 
 The scheduled jobs (`annuity:bill`, `ai:refresh`, `billing:run`) need the Laravel scheduler running (`php artisan schedule:work`, or a cron entry for `schedule:run`).
 
+## 10H. Payroll
+
+Open **Payroll** in the sidebar (Professional plan and above). Set it up once, in this order:
+
+1. **Statutory settings** (Company Admin), for each tax year and each pay currency. When nothing is saved yet, the screen is pre-filled with the published figures, which you review and save:
+   - **ZIMRA PAYE monthly tables** for USD and ZWG (taken from ZIMRA's 1 January – 31 December 2025 tables).
+   - **AIDS levy:** 3% of tax after credits.
+   - **Medical credit:** 50% of contributions.
+   - **Elderly, blind and disabled credits:** US$900 a year each (US$75 a month, converted for ZWG).
+   - **NSSA:** 4.5% from the employee and 4.5% from the employer, on insurable earnings up to USD 700 a month (converted at the pay-date rate for ZWG payrolls).
+
+   ZIMRA had not published 2026 tables when this was written, so 2026 offers the 2025 tables and says so. Use "Load published ZIMRA/NSSA figures" to reload them, or `php artisan payroll:load-published 2026` to save them for every company. Check zimra.co.zw for newer tables. That employee NSSA reduces taxable income is widely applied, but confirm it with your tax adviser. Add other levies (e.g. ZIMDEF or industry levies) yourself. Changes are recorded in the audit trail.
+2. **Pay items.**
+   - **Earnings** (allowances, overtime, bonus): fixed, % of basic, or hours × rate; taxable or not.
+   - **Deductions** (pension, medical aid, loans, union dues). Tick "Before tax" for deductions that reduce taxable income.
+   - Each item can post to its own GL account, or to the payroll accounts in Account Mapping.
+3. **Employees.**
+   - Personal, TIN and NSSA details, monthly basic salary and salary currency.
+   - Optionally a second currency and the share of pay made in it.
+   - How they are paid (bank, mobile money or cash) and which tax credits apply.
+   - Add their **standing** earnings and deductions.
+
+**Running payroll**
+
+1. **Create the run** (Payroll runs → New payroll).
+2. **Variable pay:** add this month's items, such as overtime hours or a bonus.
+3. **Calculate.** Calculate as often as needed. People who start or leave during the month are paid for the calendar days they worked. When pay is split between USD and ZWG, ZIMRA's rule applies: the whole salary is taxed on the USD table and every figure is apportioned to each currency by the pay split, converted at the pay-date rate. Employees paid in one currency are taxed on that currency's table.
+4. **Approve & post** (Finance Manager or Company Admin; it also appears in the approval inbox). This posts one journal per currency at the end of the period:
+   - Dr Salaries and wages (gross);
+   - Dr Employer payroll contributions (employer NSSA and levies);
+   - Cr PAYE payable (PAYE and AIDS levy);
+   - Cr NSSA payable (employee and employer);
+   - Cr Deductions payable;
+   - Cr Net wages payable (net pay).
+5. **Mark net pay paid.** Posts Dr Net wages payable / Cr cash, bank or mobile money, according to how each employee is paid.
+
+**Outputs:** a PDF payslip per employee (both currencies, with year-to-date totals), and CSV exports of the payroll register, PAYE schedule, NSSA schedule and payment list (for bank or mobile money uploads).
+
+Accounts used: 6100 Salaries and Wages, 6110 Employer Payroll Contributions, 2200 PAYE Payable, 2210 NSSA Payable, 2220 Payroll Deductions Payable and 2230 Net Wages Payable. All of them can be changed under Account Mapping → Payroll.
+
+## 10I. Employee Portal (self-service)
+
+Employees sign in at **/staff/login** with their work email to see their payslips and request leave and overtime. The portal is separate from acc263 user accounts, and employees only ever see their own records.
+
+**Giving an employee access** (Finance Manager or Company Admin):
+1. Make sure the employee has a work email on their employee record.
+2. On the employee's page, click **Set up portal access**.
+3. Give them the one-time password, which is shown once only. They must choose their own password at first sign-in.
+
+Use **Issue new one-time password** if they forget it, or **Remove access** to stop it. Access also ends automatically when the employee leaves (status terminated) or the company is suspended.
+
+**What employees can do**
+- **Payslips:** see and download PDF payslips once a payroll is approved. Draft payrolls are not shown.
+- **Leave:** request leave by type and dates. Days are counted Monday to Friday, and public holidays are not deducted automatically. Overlapping requests are refused, as are requests that exceed the remaining entitlement. Employees see their balances for the year and can cancel a pending request.
+- **Overtime:** claim hours already worked in the last 90 days, with a reason.
+
+**Approving requests** (Payroll → Leave & overtime; Finance Managers and Company Admins decide, Accountants can view):
+- **Leave:** approve, or decline with a note the employee sees.
+- **Overtime:** approve and choose the hourly earning to pay it as (create an hourly "Overtime" pay item first), or decline with a note. Approved hours are added automatically to the payroll whose period contains the overtime date. Once that payroll is approved, the claim is marked as paid by it and cannot be paid again.
+- **Leave types:** the defaults are Annual, Sick, Maternity, Compassionate, Study and Unpaid. Set the yearly entitlement for each type whose balance you want tracked, from your contracts and the Labour Act. acc263 does not pre-set entitlements.
+
 ## 11. Client Portal
 
 The client portal allows customers to access selected invoice and payment information.

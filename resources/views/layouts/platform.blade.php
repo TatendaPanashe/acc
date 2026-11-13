@@ -57,7 +57,7 @@
         .icon { flex: none; }
 
         .shell { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
-        .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 28px 20px; display: flex; flex-direction: column; gap: 28px; position: sticky; top: 0; height: 100vh; }
+        .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 28px 20px; display: flex; flex-direction: column; gap: 28px; position: sticky; top: 0; height: 100vh; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
         .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 22px; color: var(--accent); letter-spacing: -0.01em; padding: 0 8px; }
         .brand small { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
         .nav { display: flex; flex-direction: column; gap: 4px; }
@@ -139,7 +139,7 @@
 
         @media (max-width: 960px) {
             .shell { grid-template-columns: minmax(0, 1fr); }
-            .sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 14px 16px; gap: 12px; min-width: 0; border-right: 0; border-bottom: 1px solid var(--border); }
+            .sidebar { position: static; height: auto; overflow: visible; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 14px 16px; gap: 12px; min-width: 0; border-right: 0; border-bottom: 1px solid var(--border); }
             .nav { flex-direction: row; flex-wrap: wrap; width: 100%; }
             .nav a { padding: 8px 12px; }
             .nav .divider, .plan-card, .me .who { display: none; }

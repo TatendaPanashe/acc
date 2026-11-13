@@ -133,6 +133,16 @@ $.MyAdmin.leftSideBar = {
     Waves.init();
   },
   setMenuHeight: function (isFirstTime) {
+    // acc263: the sidebar scrolls natively (see acc263-uniform.css); only bring the active item into view once.
+    var menu = document.querySelector("#leftsidebar .menu");
+    if (menu) {
+      if (!this._menuScrolled && $.MyAdmin.options.leftSideBar.scrollActiveItemWhenPageLoad) {
+        var current = menu.querySelector(".list li.active");
+        if (current && current.offsetTop > 150) menu.scrollTop = current.offsetTop - 120;
+        this._menuScrolled = true;
+      }
+      return;
+    }
     if (typeof $.fn.slimScroll != "undefined") {
       var configs = $.MyAdmin.options.leftSideBar;
       //var height = ($(window).height() - ($('.legal').outerHeight() + $('.user-info').outerHeight() + $('.navbar').innerHeight()));

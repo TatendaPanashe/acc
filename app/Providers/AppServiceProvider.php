@@ -30,6 +30,15 @@ class AppServiceProvider extends ServiceProvider
         $this->registerPermissions();
         $this->registerAuditTrail();
 
+        RateLimiter::for('staff-login', function (Request $request) {
+            $email = Str::lower(trim((string) $request->input('email')));
+
+            return [
+                Limit::perMinute(5)->by('staff-login:'.$email.'|'.$request->ip()),
+                Limit::perMinute(20)->by('staff-login-ip:'.$request->ip()),
+            ];
+        });
+
         RateLimiter::for('portal-login', function (Request $request) {
             $email = Str::lower(trim((string) $request->input('email')));
 

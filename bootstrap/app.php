@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'subscription' => \App\Http\Middleware\EnsureSubscriptionIsActive::class,
             'plan.feature' => \App\Http\Middleware\RequirePlanFeature::class,
             'approval.rules' => \App\Http\Middleware\EnforceApprovalRules::class,
+            'staff.portal' => \App\Http\Middleware\EmployeePortalSession::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -60,6 +60,26 @@ Route::post('/client/logout', [ClientPortalController::class, 'logout'])->name('
 Route::get('/client/invoices/{invoice}/pdf', [ClientPortalController::class, 'invoicePdf'])->name('portal.invoices.pdf');
 Route::post('/client/invoices/{invoice}/payments', [ClientPortalController::class, 'payment'])->name('portal.payments.store');
 Route::get('/portal/{token}', [ClientPortalController::class, 'show'])->name('portal.show');
+
+// Employee self-service portal (separate from staff accounts; see EmployeePortalSession).
+Route::prefix('staff')->name('staff.')->controller(\App\Modules\Payroll\Http\Controllers\EmployeePortalController::class)->group(function () {
+    Route::get('/login', 'loginForm')->name('login');
+    Route::post('/login', 'login')->middleware('throttle:staff-login')->name('login.submit');
+    Route::post('/logout', 'logout')->name('logout');
+    Route::middleware('staff.portal')->group(function () {
+        Route::get('/', 'dashboard')->name('dashboard');
+        Route::get('/password', 'passwordForm')->name('password.edit');
+        Route::post('/password', 'updatePassword')->name('password.update');
+        Route::get('/payslips', 'payslips')->name('payslips');
+        Route::get('/payslips/{run}', 'payslipPdf')->whereNumber('run')->name('payslips.pdf');
+        Route::get('/leave', 'leave')->name('leave');
+        Route::post('/leave', 'storeLeave')->name('leave.store');
+        Route::post('/leave/{leave}/cancel', 'cancelLeave')->whereNumber('leave')->name('leave.cancel');
+        Route::get('/overtime', 'overtime')->name('overtime');
+        Route::post('/overtime', 'storeOvertime')->name('overtime.store');
+        Route::post('/overtime/{overtime}/cancel', 'cancelOvertime')->whereNumber('overtime')->name('overtime.cancel');
+    });
+});
 Route::post('/webhooks/{source}', [WebhookEventController::class, 'store'])->name('webhooks.store');
 
 Auth::routes();
@@ -257,6 +277,42 @@ Route::middleware(['auth', 'company.setup', 'subscription', 'permission', 'plan.
             Route::get('/runs', 'preview')->name('runs.preview');
             Route::post('/runs', 'runBilling')->name('runs.store');
             Route::get('/runs/{run}', 'showRun')->name('runs.show');
+        });
+        Route::prefix('payroll')->name('payroll.')->controller(\App\Modules\Payroll\Http\Controllers\PayrollController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/employees', 'employees')->name('employees.index');
+            Route::get('/employees/create', 'createEmployee')->name('employees.create');
+            Route::post('/employees', 'storeEmployee')->name('employees.store');
+            Route::get('/employees/{employee}', 'showEmployee')->name('employees.show');
+            Route::get('/employees/{employee}/edit', 'editEmployee')->name('employees.edit');
+            Route::put('/employees/{employee}', 'updateEmployee')->name('employees.update');
+            Route::post('/employees/{employee}/items', 'storeEmployeeItem')->name('employees.items.store');
+            Route::delete('/employees/{employee}/items/{item}', 'destroyEmployeeItem')->name('employees.items.destroy');
+            Route::get('/pay-items', 'items')->name('items.index');
+            Route::post('/pay-items', 'storeItem')->name('items.store');
+            Route::put('/pay-items/{item}', 'updateItem')->name('items.update');
+            Route::get('/statutory-settings', 'settings')->name('settings.index');
+            Route::post('/statutory-settings', 'saveSettings')->name('settings.store');
+            Route::get('/runs', 'runs')->name('runs.index');
+            Route::post('/runs', 'storeRun')->name('runs.store');
+            Route::get('/runs/{run}', 'showRun')->name('runs.show');
+            Route::post('/runs/{run}/inputs', 'storeInput')->name('runs.inputs.store');
+            Route::delete('/runs/{run}/inputs/{input}', 'destroyInput')->name('runs.inputs.destroy');
+            Route::post('/runs/{run}/calculate', 'calculate')->name('runs.calculate');
+            Route::post('/runs/{run}/approve', 'approve')->name('runs.approve');
+            Route::post('/runs/{run}/pay', 'markPaid')->name('runs.pay');
+            Route::post('/runs/{run}/cancel', 'cancel')->name('runs.cancel');
+            Route::get('/runs/{run}/payslips/{employee}', 'payslip')->name('runs.payslip');
+            Route::get('/runs/{run}/export/{report}', 'export')->whereIn('report', ['register', 'paye', 'nssa', 'bank'])->name('runs.export');
+        });
+        Route::prefix('payroll')->name('payroll.')->controller(\App\Modules\Payroll\Http\Controllers\PayrollRequestsController::class)->group(function () {
+            Route::get('/requests', 'index')->name('requests.index');
+            Route::post('/requests/leave/{leave}', 'decideLeave')->name('requests.leave.decide');
+            Route::post('/requests/overtime/{overtime}', 'decideOvertime')->name('requests.overtime.decide');
+            Route::post('/leave-types', 'storeLeaveType')->name('leave-types.store');
+            Route::put('/leave-types/{type}', 'updateLeaveType')->name('leave-types.update');
+            Route::post('/employees/{employee}/portal-access', 'issuePortalAccess')->name('employees.portal.issue');
+            Route::delete('/employees/{employee}/portal-access', 'revokePortalAccess')->name('employees.portal.revoke');
         });
         Route::prefix('approvals-audit')->name('approvals-audit.')->controller(\App\Modules\Accounting\Http\Controllers\ApprovalsAuditController::class)->group(function () {
             Route::get('/', 'index')->name('index');

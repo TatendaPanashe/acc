@@ -660,3 +660,12 @@ body.acc-app {
         min-height: auto;
     }
 }
+
+/* Left sidebar: one native scroll area that fits under the 60px top bar (the template's menu was 100vh
+   tall inside a calc(100vh - 60px) box, hiding the last items, and slimScroll fought the native scroll). */
+#leftsidebar .menu { height: 100%; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.25) transparent; }
+#leftsidebar .menu::-webkit-scrollbar { width: 6px; }
+#leftsidebar .menu::-webkit-scrollbar-thumb { background: rgba(0,0,0,.25); border-radius: 3px; }
+#leftsidebar .menu .list { padding-bottom: 32px; }
+#leftsidebar .slimScrollDiv { height: auto !important; overflow: visible !important; }
+#leftsidebar .slimScrollBar, #leftsidebar .slimScrollRail { display: none !important; }

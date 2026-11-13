@@ -47,6 +47,10 @@ class ApprovalDocuments
             'label' => 'Sales order', 'model' => SalesOrder::class, 'route' => 'accounting.inventory.sales-orders.confirm', 'param' => 'salesOrder',
             'number' => 'order_number', 'date' => 'order_date', 'amount' => 'total', 'show' => 'accounting.inventory.sales-orders.show', 'action' => 'Confirm',
         ],
+        'payroll_run' => [
+            'label' => 'Payroll run', 'model' => \App\Modules\Payroll\Models\PayrollRun::class, 'route' => 'accounting.payroll.runs.approve', 'param' => 'run',
+            'number' => 'run_number', 'date' => 'pay_date', 'amount' => 'total_cost_base', 'show' => 'accounting.payroll.runs.show', 'action' => 'Approve',
+        ],
         'stores_requisition' => [
             'label' => 'Stores requisition', 'model' => StoresRequisition::class, 'route' => 'accounting.inventory.stores-requisitions.approve', 'param' => 'requisition',
             'number' => 'requisition_number', 'date' => 'required_date', 'amount' => null, 'show' => 'accounting.inventory.stores-requisitions.show', 'action' => 'Approve',

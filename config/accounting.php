@@ -131,6 +131,14 @@ return [
             'cogs' => ['Cost of goods sold', '5000'],
             'inventory_consumption' => ['Stores issued to departments', '6000'],
         ],
+        'Payroll' => [
+            'salaries_expense' => ['Salaries and wages (gross pay)', '6100'],
+            'employer_contributions' => ['Employer NSSA and payroll levies', '6110'],
+            'paye_payable' => ['PAYE and AIDS levy payable', '2200'],
+            'nssa_payable' => ['NSSA payable', '2210'],
+            'payroll_deductions' => ['Other payroll deductions payable', '2220'],
+            'net_wages' => ['Net wages payable', '2230'],
+        ],
         'Production & job costing' => [
             'wip' => ['Work in progress (work orders & jobs)', '1250'],
             'labour_applied' => ['Labour applied to production & jobs', '6190'],

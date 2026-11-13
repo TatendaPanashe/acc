@@ -104,6 +104,15 @@ return [
         'accounting.banking.lines.journal' => 'approve',
         'accounting.banking.statements.complete' => 'approve',
 
+        // Payroll: accountants prepare runs and maintain employees; approval and paying out are controls;
+        // statutory settings and PAYE tables belong to the Company Admin. Auditors read.
+        'accounting.payroll.requests.*' => ['read' => 'view', 'write' => 'approve'],
+        'accounting.payroll.leave-types.*' => 'approve',
+        'accounting.payroll.employees.portal.*' => 'approve',
+        'accounting.payroll.settings.*' => ['read' => 'ledger.view', 'write' => 'company.manage'],
+        'accounting.payroll.runs.approve' => 'approve',
+        'accounting.payroll.runs.pay' => 'approve',
+
         // Approvals & audit: everyone sees their own submissions; approvers decide; admins set the rules.
         'accounting.approvals-audit.index' => 'view',
         'accounting.approvals-audit.reject' => 'approve',
