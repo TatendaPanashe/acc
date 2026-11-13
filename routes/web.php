@@ -115,6 +115,16 @@ Route::middleware(['auth', 'company.setup', 'permission'])->prefix('billing')->n
         Route::post('/sandbox/{payment}', 'sandboxComplete')->name('sandbox.complete');
     });
 
+// Help Centre: open to every signed-in user, including during setup or while billing is locked.
+Route::middleware('auth')->prefix('help')->name('help.')->controller(\App\Http\Controllers\HelpController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::get('/manual.pdf', 'manual')->name('manual');
+    Route::get('/setup-checklist.pdf', 'checklist')->name('checklist');
+    Route::get('/templates/{key}', 'template')->name('template');
+    Route::get('/{slug}', 'show')->name('show');
+    Route::get('/{slug}/pdf', 'pdf')->name('pdf');
+});
+
 Route::middleware(['auth', 'company.setup', 'subscription', 'permission', 'plan.feature', 'approval.rules'])->group(function () {
     Route::get('/dashboard', AccountingDashboardController::class)->name('dashboard');
 

@@ -2,32 +2,28 @@
 
 ## 1. Overview
 
-acc263 is a multi-company accounting system. Each company works inside its own private workspace. Users register, create or join a company workspace, complete company setup, then use the accounting modules assigned to that workspace.
+acc263 is online accounting, inventory, point of sale and payroll for businesses in Zimbabwe and the region. Each company works in its own private workspace, and every user has a role that decides what they can see and approve.
 
-The system currently includes:
+What the system covers:
 
-- Company onboarding and settings
-- General ledger
-- Accounts receivable
-- Accounts payable
-- Inventory and order entry
-- Point of sale
-- Reporting and statutory reports
-- Client portal
-- System administration for companies and users
+- **Company setup:** profile, currencies, ZIMRA tax details, fiscal year and chart of accounts, and team members with roles.
+- **Accounting:** general ledger, accounts receivable and payable, bank reconciliation, fixed assets and depreciation, multi-currency with exchange gains and losses.
+- **Stock and sales:** inventory with weighted-average costing, sales and purchase orders, transfers, stores requisitions, and point of sale.
+- **People:** payroll with ZIMRA PAYE and NSSA, payslips, and the employee portal for leave and overtime requests.
+- **Operations:** recurring (annuity) billing, bills of materials, work orders and job costing.
+- **Controls and insight:** approval inbox and rules, a tamper-evident audit trail, reporting and analytics, and AI forecasts and anomaly detection.
+- **Portals:** a client portal for customers and an employee portal for staff.
+- **Billing:** subscription plans with a 14-day free trial.
 
 ## 2. Getting Started
 
-### 2.1 Welcome Page
+### 2.1 Website, sign-in and help
 
-Open the application homepage.
+The public website explains the system and its plans: **Home**, **Services** (modules and pricing), **How we work** and **Contact**. Use **Start free trial** to create a workspace, or **Sign in** if you already have one; signed-in users see **Open acc263** instead.
 
-Guests will see two options:
+Inside the system, the **Help** link in the top bar opens the Help Centre: every guide in this manual can be read on screen or downloaded as a PDF, together with a setup checklist and import templates.
 
-- **Create account**: Register a new company workspace.
-- **Sign in**: Log in to an existing workspace.
-
-If you are already logged in, the homepage redirects to the accounting dashboard.
+Employees sign in separately at **/staff/login** (see 10I), and customers at **/client/login** (see 11).
 
 ### 2.2 Create an Account
 

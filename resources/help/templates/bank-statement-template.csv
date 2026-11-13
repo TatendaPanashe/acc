@@ -1,0 +1,5 @@
+Date,Description,Reference,Money in,Money out
+2026-06-01,Opening transfer from savings,TRF-1001,5000.00,
+2026-06-03,Customer receipt - Mbare Clinic,INV-0042,1250.00,
+2026-06-05,ZESA prepaid electricity,ZES-77812,,180.00
+2026-06-07,Bank charges,,,12.50

@@ -19,6 +19,11 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+                    <li class="acc-help-link">
+                        <a href="{{ route('help.index') }}" title="Help Centre: guides and downloads" class="{{ request()->routeIs('help.*') ? 'active' : '' }}">
+                            <i class="fas fa-question-circle"></i><span class="acc-help-label">Help</span>
+                        </a>
+                    </li>
                     <!-- Full Screen Button -->
                     <li class="fullscreen">
                         <a href="javascript:;" class="fullscreen-btn">

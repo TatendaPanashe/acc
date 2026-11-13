@@ -669,3 +669,13 @@ body.acc-app {
 #leftsidebar .menu .list { padding-bottom: 32px; }
 #leftsidebar .slimScrollDiv { height: auto !important; overflow: visible !important; }
 #leftsidebar .slimScrollBar, #leftsidebar .slimScrollRail { display: none !important; }
+
+/* Help link in the top bar */
+.navbar .acc-help-link > a { display: inline-flex !important; align-items: center; gap: 7px; font-weight: 600; color: #fff !important;
+    background: #1957c2 !important; border-radius: 999px; padding: 7px 16px !important; margin-top: 11px; line-height: 1.2;
+    box-shadow: 0 4px 12px -4px rgba(25, 87, 194, .6); }
+.navbar .acc-help-link > a:hover, .navbar .acc-help-link > a:focus, .navbar .acc-help-link > a.active { background: #12408f !important; color: #fff !important; text-decoration: none; }
+.navbar .acc-help-link > a:focus-visible { outline: 3px solid rgba(25, 87, 194, .45); outline-offset: 2px; }
+.navbar .acc-help-link > a i, .navbar .acc-help-link > a span { color: #fff !important; }
+.acc-help-label { font-size: 14px; }
+@media (max-width: 767px) { .acc-help-label { display: none; } }
