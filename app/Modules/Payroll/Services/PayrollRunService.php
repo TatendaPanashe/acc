@@ -152,7 +152,7 @@ class PayrollRunService
     /** Posts the payroll journal for each currency and locks the run. */
     public function approve(PayrollRun $run): PayrollRun
     {
-        return DB::transaction(function () use ($run) {
+        $run = DB::transaction(function () use ($run) {
             $run = PayrollRun::lockForUpdate()->findOrFail($run->id);
             $this->assertStatus($run, ['draft']);
             if (!$run->calculated_at || $run->payslips()->doesntExist()) {
@@ -172,6 +172,24 @@ class PayrollRunService
 
             return $run->fresh();
         });
+
+        $this->sendPayslips($run);
+
+        return $run;
+    }
+
+    /** Emails each employee on the run that their payslip is ready (once per run and employee). */
+    public function sendPayslips(PayrollRun $run): int
+    {
+        $notifier = app(\App\Services\Notifications\Notifier::class);
+        $sent = 0;
+        $employees = Employee::withoutGlobalScopes()->whereIn('id', $run->payslips()->pluck('employee_id')->unique())->get();
+        foreach ($employees as $employee) {
+            $sent += $notifier->send('payroll.payslip_ready', $employee->email, new \App\Notifications\Payroll\PayslipReady($run, $employee),
+                (int) $run->company_id, once: 'payslip:'.$run->id.':'.$employee->id, subject: $run);
+        }
+
+        return $sent;
     }
 
     private function postPayrollJournal(PayrollRun $run, string $currency, Collection $slips): JournalEntry

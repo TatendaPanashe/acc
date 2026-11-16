@@ -1,0 +1,129 @@
+/* acc263 email theme. Inlined into every email by CssToInlineStyles; keep selectors simple. */
+
+body, body *:not(html):not(style):not(br):not(tr):not(code) {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    position: relative;
+}
+
+body {
+    -webkit-text-size-adjust: none;
+    background-color: #f3f5f9;
+    color: #3d4656;
+    height: 100%;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    width: 100% !important;
+}
+
+p, ul, ol, blockquote { line-height: 1.6; text-align: left; }
+a { color: #3157d5; }
+a img { border: none; }
+
+h1 { color: #111827; font-size: 20px; font-weight: 700; margin-top: 0; margin-bottom: 12px; text-align: left; }
+h2 { color: #111827; font-size: 16px; font-weight: 700; margin-top: 0; text-align: left; }
+h3 { color: #111827; font-size: 14px; font-weight: 700; margin-top: 0; text-align: left; }
+
+p { font-size: 15px; margin-top: 0; margin-bottom: 14px; color: #3d4656; }
+p.sub { font-size: 12px; color: #6b7280; }
+ul, ol { font-size: 15px; margin-top: 0; margin-bottom: 14px; padding-left: 22px; }
+li { margin-bottom: 6px; }
+strong { color: #111827; }
+code { background-color: #eef2ff; border-radius: 4px; color: #2444ad; font-family: Menlo, Consolas, monospace; font-size: 15px; padding: 2px 6px; }
+img { max-width: 100%; }
+
+/* Layout */
+
+.wrapper { background-color: #f3f5f9; margin: 0; padding: 0; width: 100%; }
+.content { margin: 0; padding: 0; width: 100%; }
+
+.header { padding: 28px 0 18px; text-align: center; }
+.brand { margin: 0 auto; }
+.brand-mark { background-color: #3157d5; border-radius: 10px; color: #ffffff; display: inline-block; font-size: 15px; font-weight: 700; height: 40px; line-height: 40px; text-align: center; width: 40px; }
+.brand-logo { max-height: 48px; max-width: 200px; }
+.brand-name { color: #111827; font-size: 17px; font-weight: 700; padding-left: 10px; text-decoration: none; }
+
+.body { background-color: #f3f5f9; border-bottom: 0; border-top: 0; margin: 0; padding: 0; width: 100%; }
+
+.inner-body {
+    background-color: #ffffff;
+    border-color: #e4e8f0;
+    border-radius: 12px;
+    border-width: 1px;
+    border-style: solid;
+    border-top: 4px solid #3157d5;
+    margin: 0 auto;
+    padding: 0;
+    width: 570px;
+}
+
+.content-cell { max-width: 100vw; padding: 32px; }
+
+.eyebrow { color: #3157d5; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 6px; text-transform: uppercase; }
+
+/* Highlight: the one number or status that matters */
+
+.highlight { border-radius: 10px; margin: 6px 0 20px; width: 100%; }
+.highlight-cell { padding: 18px 20px; }
+.highlight-label { color: #4b5563; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; margin: 0 0 4px; text-transform: uppercase; }
+.highlight-value { color: #111827; font-size: 26px; font-weight: 700; line-height: 1.2; margin: 0; }
+.highlight-note { color: #4b5563; font-size: 13px; margin: 6px 0 0; }
+.highlight-primary { background-color: #eef2ff; border: 1px solid #d6defb; }
+.highlight-success { background-color: #ecfdf3; border: 1px solid #c6f0d6; }
+.highlight-success .highlight-value { color: #067647; }
+.highlight-warning { background-color: #fff8eb; border: 1px solid #fbe2b0; }
+.highlight-warning .highlight-value { color: #8a5a00; }
+.highlight-danger { background-color: #fef3f2; border: 1px solid #fbd5d0; }
+.highlight-danger .highlight-value { color: #b42318; }
+
+/* Summary: label / value details */
+
+.summary { border: 1px solid #e4e8f0; border-radius: 10px; margin: 0 0 20px; width: 100%; }
+.summary-title { background-color: #f8fafc; border-bottom: 1px solid #e4e8f0; color: #111827; font-size: 13px; font-weight: 700; padding: 10px 16px; }
+.summary-label { border-bottom: 1px solid #eef1f6; color: #6b7280; font-size: 14px; padding: 10px 16px; width: 42%; vertical-align: top; }
+.summary-value { border-bottom: 1px solid #eef1f6; color: #111827; font-size: 14px; font-weight: 600; padding: 10px 16px; text-align: right; vertical-align: top; }
+.summary-last .summary-label, .summary-last .summary-value { border-bottom: 0; }
+
+/* Items: invoice lines, counts */
+
+.items { border: 1px solid #e4e8f0; border-radius: 10px; margin: 0 0 20px; width: 100%; }
+.items-head { background-color: #f8fafc; border-bottom: 1px solid #e4e8f0; color: #6b7280; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; padding: 10px 16px; text-transform: uppercase; }
+.items-cell { border-bottom: 1px solid #eef1f6; color: #3d4656; font-size: 14px; padding: 10px 16px; }
+.items-amount { border-bottom: 1px solid #eef1f6; color: #111827; font-size: 14px; padding: 10px 16px; text-align: right; white-space: nowrap; }
+.items-total-label { color: #111827; font-size: 14px; font-weight: 700; padding: 12px 16px; }
+.items-total { color: #111827; font-size: 16px; font-weight: 700; padding: 12px 16px; text-align: right; white-space: nowrap; }
+
+/* Note: callouts (a reason, an instruction, a one-time password) */
+
+.note { border-radius: 8px; margin: 0 0 20px; width: 100%; }
+.note-cell { font-size: 14px; padding: 14px 16px; }
+.note-title { font-size: 13px; font-weight: 700; margin: 0 0 4px; }
+.note-body { font-size: 14px; margin: 0; }
+.note-info { background-color: #f8fafc; border-left: 4px solid #3157d5; }
+.note-warning { background-color: #fff8eb; border-left: 4px solid #f0b429; }
+.note-danger { background-color: #fef3f2; border-left: 4px solid #d92d20; }
+.note-success { background-color: #ecfdf3; border-left: 4px solid #12b76a; }
+
+/* Buttons */
+
+.action { margin: 8px auto 24px; padding: 0; text-align: center; width: 100%; }
+.button { -webkit-text-size-adjust: none; border-radius: 8px; color: #ffffff; display: inline-block; font-size: 15px; font-weight: 600; overflow: hidden; text-decoration: none; }
+.button-blue, .button-primary { background-color: #3157d5; border-bottom: 12px solid #3157d5; border-left: 24px solid #3157d5; border-right: 24px solid #3157d5; border-top: 12px solid #3157d5; }
+.button-green, .button-success { background-color: #079455; border-bottom: 12px solid #079455; border-left: 24px solid #079455; border-right: 24px solid #079455; border-top: 12px solid #079455; }
+.button-red, .button-error { background-color: #d92d20; border-bottom: 12px solid #d92d20; border-left: 24px solid #d92d20; border-right: 24px solid #d92d20; border-top: 12px solid #d92d20; }
+
+/* Subcopy & footer */
+
+.subcopy { border-top: 1px solid #e4e8f0; margin-top: 24px; padding-top: 20px; }
+.subcopy p { color: #6b7280; font-size: 12px; }
+
+.footer { margin: 0 auto; padding: 0; text-align: center; width: 570px; }
+.footer p { color: #8a94a6; font-size: 12px; line-height: 1.6; text-align: center; margin-bottom: 6px; }
+.footer a { color: #6b7280; text-decoration: underline; }
+
+.salutation { color: #3d4656; font-size: 15px; margin-top: 8px; }
+
+.break-all { word-break: break-all; }
+
+.preheader { display: none !important; visibility: hidden; mso-hide: all; font-size: 1px; line-height: 1px; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; }

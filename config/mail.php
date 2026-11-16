@@ -113,4 +113,13 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    | Markdown mail theme and components (resources/views/vendor/mail). The acc263 theme and the
+    | brand / highlight / summary / items / note components are used by every app notification.
+    */
+    'markdown' => [
+        'theme' => env('MAIL_MARKDOWN_THEME', 'acc263'),
+        'paths' => [resource_path('views/vendor/mail')],
+    ],
+
 ];

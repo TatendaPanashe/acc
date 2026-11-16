@@ -6,6 +6,8 @@ use App\Models\Company;
 use App\Models\Platform\Plan;
 use App\Models\Platform\Subscription;
 use App\Models\Platform\SubscriptionEvent;
+use App\Notifications\Account\SubscriptionChanged;
+use App\Services\Notifications\Notifier;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -297,7 +299,7 @@ class SubscriptionService
             default => null,
         };
 
-        return SubscriptionEvent::create([
+        $event = SubscriptionEvent::create([
             'company_id' => $sub->company_id,
             'platform_subscription_id' => $sub->id,
             'type' => $type,
@@ -309,6 +311,25 @@ class SubscriptionService
             'user_id' => auth()->id(),
             'occurred_at' => now(),
         ]);
+
+        $this->notify($event);
+
+        return $event;
+    }
+
+    /** Emails the company admins about lifecycle changes (payments and renewals have their own receipts). */
+    private function notify(SubscriptionEvent $event): void
+    {
+        if (!in_array($event->type, SubscriptionChanged::TYPES, true)) {
+            return;
+        }
+        // Plan picked during sign-up: covered by the welcome email.
+        if ($event->type === 'plan_changed' && ($event->details['note'] ?? null) === 'Chosen at sign-up') {
+            return;
+        }
+
+        $notifier = app(Notifier::class);
+        $notifier->send('billing.subscription_changed', $notifier->companyUsers($event->company_id), new SubscriptionChanged($event), $event->company_id, subject: $event);
     }
 
     private function reopenCompany(Subscription $sub): void

@@ -128,6 +128,12 @@ Route::middleware('auth')->prefix('help')->name('help.')->controller(\App\Http\C
 Route::middleware(['auth', 'company.setup', 'subscription', 'permission', 'plan.feature', 'approval.rules'])->group(function () {
     Route::get('/dashboard', AccountingDashboardController::class)->name('dashboard');
 
+    Route::controller(\App\Http\Controllers\NotificationSettingsController::class)->prefix('company/notifications')->name('company.notifications.')->group(function () {
+        Route::get('/', 'edit')->name('edit');
+        Route::put('/', 'update')->name('update');
+        Route::post('/test', 'test')->name('test');
+    });
+
     Route::resource('/company/team', TeamController::class)
         ->parameters(['team' => 'user'])
         ->except(['show'])

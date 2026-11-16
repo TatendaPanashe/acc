@@ -32,6 +32,10 @@ class EmployeePortalService
         $password = Str::password(12, symbols: false);
         $employee->forceFill(['portal_password' => Hash::make($password), 'portal_password_changed_at' => null])->save();
 
+        app(\App\Services\Notifications\Notifier::class)->send('portal.access_issued', $employee->email,
+            new \App\Notifications\PortalAccessIssued('staff', $employee->first_name, (string) $employee->email, $password, (int) $employee->company_id),
+            (int) $employee->company_id, subject: $employee);
+
         return $password;
     }
 

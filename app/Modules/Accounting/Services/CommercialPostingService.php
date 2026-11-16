@@ -90,6 +90,7 @@ class CommercialPostingService
 
             $this->finish($entry);
             $invoice->update(['journal_entry_id' => $entry->id, 'status' => 'posted']);
+            $this->emailCustomer('customers.invoice_issued', $invoice, new \App\Notifications\Customers\CustomerInvoiceIssued($invoice));
 
             return $invoice->fresh('lines');
         });
@@ -152,6 +153,7 @@ class CommercialPostingService
 
             $this->finish($entry);
             $receipt->update(['journal_entry_id' => $entry->id, 'status' => 'posted']);
+            $this->emailCustomer('customers.receipt', $receipt, new \App\Notifications\Customers\CustomerReceiptIssued($receipt));
 
             if ($invoice && $applied > 0) {
                 CustomerAllocation::create([
@@ -275,6 +277,14 @@ class CommercialPostingService
         if (!in_array($invoice->status, ['posted', 'part_paid', 'paid'], true)) {
             throw ValidationException::withMessages(['invoice_id' => "Invoice {$invoice->invoice_number} has not been posted yet."]);
         }
+    }
+
+    /** Sends after the posting commits, and only when the company has switched the email on. */
+    private function emailCustomer(string $event, Model $document, \Illuminate\Notifications\Notification $notification): void
+    {
+        $email = \App\Modules\Accounting\Models\Customer::withoutGlobalScopes()->whereKey($document->customer_id)->value('email');
+        app(\App\Services\Notifications\Notifier::class)->send($event, $email, $notification, (int) $document->company_id,
+            once: $event.':'.$document->getKey(), subject: $document);
     }
 
     private function applyToInvoice(Model $invoice, float $amount): void

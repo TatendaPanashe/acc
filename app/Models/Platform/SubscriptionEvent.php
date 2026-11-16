@@ -26,6 +26,11 @@ class SubscriptionEvent extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function subscription()
+    {
+        return $this->belongsTo(Subscription::class, 'platform_subscription_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -44,6 +44,10 @@ class PortalCredentialService
             'portal_password_changed_at' => null,
         ])->save();
 
+        app(\App\Services\Notifications\Notifier::class)->send('portal.access_issued', $customer->email,
+            new \App\Notifications\PortalAccessIssued('client', $customer->name, (string) $customer->email, $password, (int) $customer->company_id),
+            (int) $customer->company_id, subject: $customer);
+
         return $password;
     }
 

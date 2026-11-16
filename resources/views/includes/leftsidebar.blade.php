@@ -77,6 +77,7 @@
         ],
         'COMPANY' => [
             ['Team', 'users', 'company.team.*', 'company.team.index'],
+            ['Notifications', 'bell', 'company.notifications.*', 'company.notifications.edit'],
             ['Billing & Plan', 'credit-card', 'billing.*', 'billing.index'],
             ['Company Profile', 'briefcase', 'company.setup.*', 'company.setup.edit'],
             ['Accounting Settings', 'settings', 'accounting.settings.*', 'accounting.settings.index'],

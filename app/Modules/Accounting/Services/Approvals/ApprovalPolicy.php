@@ -7,6 +7,8 @@ use App\Modules\Accounting\Models\ApprovalRequest;
 use App\Modules\Accounting\Models\ApprovalRule;
 use App\Modules\Accounting\Services\AuditTrailService;
 use App\Modules\Accounting\Services\ExchangeRateService;
+use App\Notifications\Team\ApprovalDecided;
+use App\Services\Notifications\Notifier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
 
@@ -95,7 +97,24 @@ class ApprovalPolicy
         $request->company_id = $document->company_id;
         $request->save();
 
+        $this->notifyPreparer($request, $document, $type, $user);
+
         return $request;
+    }
+
+    /** Tells the person who captured the document what happened to it (not when they decided it themselves). */
+    private function notifyPreparer(ApprovalRequest $request, Model $document, string $type, User $user): void
+    {
+        $preparer = $request->requested_by ? User::find($request->requested_by) : null;
+        if (!$preparer || $preparer->id === $user->id) {
+            return;
+        }
+
+        $amount = $request->amount !== null ? trim(($document->currency ?? '').' '.number_format((float) $request->amount, 2)) : null;
+        app(Notifier::class)->send('approvals.decided', $preparer, new ApprovalDecided(
+            ApprovalDocuments::label($type).' '.$request->reference, $request->status, $user->name, $request->resolution_note,
+            ApprovalDocuments::url($type, $document), $amount, (int) $document->company_id,
+        ), (int) $document->company_id, subject: $request);
     }
 
     /** Latest rejection that the document has not been edited since. */

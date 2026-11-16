@@ -16,6 +16,9 @@ use App\Services\Billing\Gateways\PaynowGateway;
 use App\Services\Billing\Gateways\PesepayGateway;
 use App\Services\Billing\Gateways\SandboxGateway;
 use App\Services\Billing\Gateways\StripeGateway;
+use App\Notifications\Account\SubscriptionPaymentFailed;
+use App\Notifications\Account\SubscriptionPaymentReceived;
+use App\Services\Notifications\Notifier;
 use App\Services\Platform\SubscriptionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -36,7 +39,7 @@ class BillingService
         'sandbox' => SandboxGateway::class,
     ];
 
-    public function __construct(private readonly SubscriptionService $subscriptions)
+    public function __construct(private readonly SubscriptionService $subscriptions, private readonly Notifier $notifier)
     {
     }
 
@@ -283,6 +286,8 @@ class BillingService
                 $this->settle($payment->invoice, $payment->provider, $payment);
             } elseif ($result['status'] === 'failed') {
                 $payment->update(['status' => 'failed', 'failure_reason' => $result['reason'] ?? 'Payment failed']);
+                $this->notifier->send('billing.payment_failed', $this->notifier->companyUsers($payment->company_id),
+                    new SubscriptionPaymentFailed($payment), $payment->company_id, once: 'payment:'.$payment->id, subject: $payment);
             }
 
             return $payment->fresh();
@@ -307,6 +312,11 @@ class BillingService
                 $forever ? (float) $invoice->amount : null, $forever ? $invoice->coupon_id : null);
         } else {
             $this->subscriptions->renew($sub, $provider);
+        }
+
+        if ((float) $invoice->amount > 0) {
+            $this->notifier->send('billing.payment_received', $this->notifier->companyUsers($invoice->company_id),
+                new SubscriptionPaymentReceived($invoice->fresh()), $invoice->company_id, once: 'invoice-paid:'.$invoice->id, subject: $invoice);
         }
     }
 }

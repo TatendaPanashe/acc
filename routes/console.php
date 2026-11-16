@@ -13,3 +13,4 @@ Artisan::command('inspire', function () {
 \Illuminate\Support\Facades\Schedule::command('billing:run')->hourly()->withoutOverlapping();
 \Illuminate\Support\Facades\Schedule::command('annuity:bill')->dailyAt('06:00')->withoutOverlapping();
 \Illuminate\Support\Facades\Schedule::command('ai:refresh')->dailyAt('02:30')->withoutOverlapping();
+\Illuminate\Support\Facades\Schedule::command('notifications:daily')->dailyAt('07:00')->withoutOverlapping();

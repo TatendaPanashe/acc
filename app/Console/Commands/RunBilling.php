@@ -5,13 +5,13 @@ namespace App\Console\Commands;
 use App\Models\Company;
 use App\Models\Platform\PlatformInvoice;
 use App\Models\Platform\Subscription;
-use App\Models\User;
+use App\Notifications\Account\TrialEndingSoon;
 use App\Notifications\SubscriptionPaymentReminder;
 use App\Services\Billing\BillingService;
 use App\Services\Billing\Entitlements;
+use App\Services\Notifications\Notifier;
 use App\Services\Platform\SubscriptionService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Notification;
 
 /**
  * Subscription lifecycle housekeeping (scheduled hourly):
@@ -24,9 +24,22 @@ class RunBilling extends Command
 
     protected $description = 'Expire trials, issue renewal invoices and reminders, and suspend unpaid subscriptions';
 
-    public function handle(SubscriptionService $subscriptions, BillingService $billing, Entitlements $entitlements): int
+    public function handle(SubscriptionService $subscriptions, BillingService $billing, Entitlements $entitlements, Notifier $notifier): int
     {
-        $counts = array_fill_keys(['trials_expired', 'promos_ended', 'renewals_issued', 'reminders', 'past_due', 'suspended'], 0);
+        $counts = array_fill_keys(['trial_reminders', 'trials_expired', 'promos_ended', 'renewals_issued', 'reminders', 'past_due', 'suspended'], 0);
+
+        // Reminders a few days before the trial ends: the nearest reminder day only, once each.
+        $reminderDays = collect(config('notifications.trial_reminder_days', []))->sort()->values();
+        if ($reminderDays->isNotEmpty()) {
+            Subscription::with('plan')->where('status', 'trialing')->whereBetween('trial_ends_at', [now(), now()->addDays($reminderDays->last())])
+                ->each(function (Subscription $sub) use ($notifier, $reminderDays, &$counts) {
+                    $left = max(1, (int) ceil(now()->diffInHours($sub->trial_ends_at) / 24));
+                    $stage = $reminderDays->first(fn ($d) => $left <= $d);
+                    $sent = $notifier->send('billing.trial_ending', $notifier->companyUsers($sub->company_id), new TrialEndingSoon($sub, $left),
+                        $sub->company_id, once: 'trial-ending:'.$sub->id.':'.$sub->trial_ends_at->toDateString().':'.$stage, subject: $sub);
+                    $counts['trial_reminders'] += $sent > 0 ? 1 : 0;
+                });
+        }
 
         Subscription::where('status', 'trialing')->where('trial_ends_at', '<=', now())->each(function ($sub) use ($subscriptions, &$counts) {
             $subscriptions->expireTrial($sub);
@@ -80,10 +93,9 @@ class RunBilling extends Command
 
     private function remind(PlatformInvoice $invoice, string $kind): void
     {
-        $admins = User::where('company_id', $invoice->company_id)->where('role', 'admin')->get();
-        if ($admins->isNotEmpty()) {
-            Notification::send($admins, new SubscriptionPaymentReminder($invoice, $kind));
-        }
+        $notifier = app(Notifier::class);
+        $notifier->send('billing.invoice_due', $notifier->companyUsers($invoice->company_id), new SubscriptionPaymentReminder($invoice, $kind),
+            $invoice->company_id, once: 'invoice-'.$kind.':'.$invoice->id, subject: $invoice);
         $invoice->update(['reminder_sent_at' => now()]);
     }
 }

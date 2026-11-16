@@ -41,6 +41,9 @@ class TeamController extends Controller
         $user->is_superuser = false;
         $user->save();
 
+        app(\App\Services\Notifications\Notifier::class)->send('team.member_added', $user,
+            new \App\Notifications\Team\TeamMemberAdded($user, $request->user()->name), $user->company_id, subject: $user);
+
         return redirect()->route('company.team.index')
             ->with('success', $user->name.' can now sign in as '.config('permissions.roles.'.$user->role).'.');
     }

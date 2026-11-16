@@ -65,6 +65,7 @@ return [
         'billing.*' => 'company.manage',
         'company.setup.*' => 'company.manage',
         'company.team.*' => 'company.manage',
+        'company.notifications.*' => 'company.manage',
 
         // Configuration & ledger structure
         'accounting.settings.rates.*' => ['read' => 'ledger.view', 'write' => 'approve'], // daily rates by finance managers

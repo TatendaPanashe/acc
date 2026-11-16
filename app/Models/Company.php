@@ -25,6 +25,7 @@ class Company extends Model
     protected $casts = [
         'status' => 'boolean',
         'onboarding_completed_at' => 'datetime',
+        'notification_settings' => 'array',
     ];
 
     protected static function booted(): void

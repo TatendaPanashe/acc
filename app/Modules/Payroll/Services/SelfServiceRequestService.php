@@ -8,6 +8,9 @@ use App\Modules\Payroll\Models\LeaveRequest;
 use App\Modules\Payroll\Models\LeaveType;
 use App\Modules\Payroll\Models\OvertimeRequest;
 use App\Modules\Payroll\Models\PayItem;
+use App\Notifications\Payroll\SelfServiceRequestDecided;
+use App\Notifications\Payroll\SelfServiceRequestSubmitted;
+use App\Services\Notifications\Notifier;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
@@ -90,6 +93,7 @@ class SelfServiceRequestService
             'days' => $days, 'reason' => $data['reason'] ?? null, 'status' => 'pending']);
         $request->company_id = $employee->company_id;
         $request->save();
+        $this->notifySubmitted($request);
 
         return $request;
     }
@@ -103,6 +107,7 @@ class SelfServiceRequestService
         $request = new OvertimeRequest(['employee_id' => $employee->id, 'work_date' => $date->toDateString(), 'hours' => $data['hours'], 'reason' => $data['reason'], 'status' => 'pending']);
         $request->company_id = $employee->company_id;
         $request->save();
+        $this->notifySubmitted($request);
 
         return $request;
     }
@@ -126,6 +131,7 @@ class SelfServiceRequestService
             }
         }
         $request->update(['status' => $approve ? 'approved' : 'rejected', 'decided_by' => $user->id, 'decided_at' => now(), 'decision_note' => $note]);
+        $this->notifyDecided($request);
     }
 
     public function decideOvertime(OvertimeRequest $request, bool $approve, User $user, ?int $payItemId = null, ?string $note = null): void
@@ -138,6 +144,21 @@ class SelfServiceRequestService
                 ->first() ?? throw ValidationException::withMessages(['pay_item_id' => 'Create an hourly overtime earning under Payroll → Pay items first.']);
         }
         $request->update(['status' => $approve ? 'approved' : 'rejected', 'pay_item_id' => $payItem?->id, 'decided_by' => $user->id, 'decided_at' => now(), 'decision_note' => $note]);
+        $this->notifyDecided($request);
+    }
+
+    /** Approvers are the people who may decide requests (Company Admins and Finance Managers). */
+    private function notifySubmitted(LeaveRequest|OvertimeRequest $request): void
+    {
+        $notifier = app(Notifier::class);
+        $notifier->send('payroll.request_submitted', $notifier->companyUsers((int) $request->company_id, ['admin', 'finance_manager']),
+            new SelfServiceRequestSubmitted($request), (int) $request->company_id, subject: $request);
+    }
+
+    private function notifyDecided(LeaveRequest|OvertimeRequest $request): void
+    {
+        app(Notifier::class)->send('payroll.request_decided', $request->employee?->email, new SelfServiceRequestDecided($request),
+            (int) $request->company_id, subject: $request);
     }
 
     private function assertPending(LeaveRequest|OvertimeRequest $request): void

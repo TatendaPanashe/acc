@@ -90,6 +90,21 @@ class RegisterController extends Controller
         });
     }
 
+    /** Welcome email to the new admin and a sign-up alert to the platform inbox. */
+    protected function registered(\Illuminate\Http\Request $request, $user)
+    {
+        $notifier = app(\App\Services\Notifications\Notifier::class);
+        $sub = $user->company?->subscription;
+        $plan = $sub?->plan?->name;
+
+        $notifier->send('account.welcome', $user, new \App\Notifications\Account\WelcomeToWorkspace($user, $plan, $sub?->trial_ends_at?->format('d M Y')), $user->company_id);
+        if ($platform = config('notifications.platform_email')) {
+            $notifier->send('account.welcome', $platform, new \App\Notifications\Account\NewSignupAlert($user, $plan), null);
+        }
+
+        return null;
+    }
+
     private function uniqueUsername(string $email): string
     {
         $base = Str::slug(Str::before($email, '@'), '_') ?: 'user';
