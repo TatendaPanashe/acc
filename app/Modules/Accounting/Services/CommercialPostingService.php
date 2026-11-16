@@ -90,6 +90,9 @@ class CommercialPostingService
 
             $this->finish($entry);
             $invoice->update(['journal_entry_id' => $entry->id, 'status' => 'posted']);
+            // Fiscalise with ZIMRA once the posting has committed (when the company has it switched on),
+            // before the customer email so the emailed PDF carries the fiscal QR code.
+            DB::afterCommit(fn () => app(ZimraFdmsService::class)->autoSubmit($invoice));
             $this->emailCustomer('customers.invoice_issued', $invoice, new \App\Notifications\Customers\CustomerInvoiceIssued($invoice));
 
             return $invoice->fresh('lines');

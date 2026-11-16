@@ -70,9 +70,15 @@ class CustomerController extends Controller
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'max:80'],
             'billing_address' => ['nullable', 'max:1000'],
+            // ZIMRA formats: TIN is 10 digits, VAT number 9 digits.
+            'tin' => ['nullable', 'regex:/^\d{10}$/'],
+            'vat_number' => ['nullable', 'regex:/^\d{9}$/'],
             'credit_limit' => ['required', 'numeric', 'min:0'],
             'currency' => ['nullable', 'size:3'],
             'status' => ['nullable', 'boolean'],
+        ], [
+            'tin.regex' => 'The TIN must be 10 digits.',
+            'vat_number.regex' => 'The VAT number must be 9 digits.',
         ]);
     }
 }

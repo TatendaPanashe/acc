@@ -8,6 +8,8 @@
     <div class="col-md-4 mb-3"><label class="form-label">Currency</label><input name="currency" maxlength="3" class="form-control" value="{{ old('currency', $customer->currency ?? 'USD') }}"></div>
     <div class="col-md-4 mb-3"><label class="form-label">Credit Limit</label><input type="number" step="0.01" name="credit_limit" class="form-control text-end" value="{{ old('credit_limit', $customer->credit_limit ?? 0) }}" required></div>
     <div class="col-md-4 mb-3 d-flex align-items-end"><div class="form-check"><input type="checkbox" name="status" value="1" class="form-check-input" id="status" @checked(old('status', $customer->status ?? true))><label for="status" class="form-check-label">Active</label></div></div>
+    <div class="col-md-6 mb-3"><label class="form-label">TIN</label><input name="tin" class="form-control" inputmode="numeric" maxlength="10" placeholder="10 digits" value="{{ old('tin', $customer->tin ?? '') }}"><div class="form-text">For business customers. Printed on tax invoices and reported to ZIMRA.</div></div>
+    <div class="col-md-6 mb-3"><label class="form-label">VAT Number</label><input name="vat_number" class="form-control" inputmode="numeric" maxlength="9" placeholder="9 digits" value="{{ old('vat_number', $customer->vat_number ?? '') }}"><div class="form-text">If the customer is VAT registered.</div></div>
     <div class="col-12 mb-3"><label class="form-label">Billing Address</label><textarea name="billing_address" class="form-control">{{ old('billing_address', $customer->billing_address ?? '') }}</textarea></div>
 </div>
 @if($errors->any())<div class="alert alert-danger"><ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif

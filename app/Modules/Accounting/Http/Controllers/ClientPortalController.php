@@ -7,7 +7,6 @@ use App\Modules\Accounting\Models\Customer;
 use App\Modules\Accounting\Models\CustomerReceipt;
 use App\Modules\Accounting\Models\SalesInvoice;
 use App\Modules\Accounting\Services\PortalCredentialService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -167,13 +166,12 @@ class ClientPortalController extends Controller
             ->where('customer_id', $customer->id)
             ->findOrFail($invoice);
 
-        $pdf = Pdf::loadView('portal.invoice-pdf', [
-            'customer' => $customer,
-            'invoice' => $invoice,
-            'company' => $customer->company,
-        ])->setPaper('a4', 'portrait');
+        $pdfs = app(\App\Modules\Accounting\Services\InvoicePdfService::class);
 
-        return $pdf->download('invoice-'.$invoice->invoice_number.'.pdf');
+        return response($pdfs->render($invoice, 'portal'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$pdfs->filename($invoice).'"',
+        ]);
     }
 
     public function logout(Request $request): RedirectResponse

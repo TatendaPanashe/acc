@@ -131,6 +131,7 @@
         .flash { padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; font-weight: 500; display: flex; gap: 10px; align-items: center; }
         .flash.success { background: rgba(12, 163, 12, 0.10); color: var(--good); }
         .flash.error { background: rgba(208, 59, 59, 0.10); color: var(--bad); }
+        .flash.warning { background: rgba(214, 145, 18, 0.12); color: var(--warn-text); }
 
         .tip { position: fixed; z-index: 50; pointer-events: none; background: var(--text); color: var(--surface); font-size: 13px; padding: 7px 10px; border-radius: 8px; white-space: pre-line; max-width: 260px; box-shadow: 0 6px 20px rgba(0,0,0,.18); opacity: 0; transition: opacity .08s; }
         .tip.show { opacity: 1; }
@@ -163,6 +164,7 @@
             <a href="{{ route('system.plans.index') }}" class="{{ request()->routeIs('system.plans.*') ? 'active' : '' }}"><x-platform.icon name="bar-chart"/> Plans</a>
             <a href="{{ route('system.coupons.index') }}" class="{{ request()->routeIs('system.coupons.*') ? 'active' : '' }}"><x-platform.icon name="gift"/> Coupons</a>
             <a href="{{ route('system.gateways.index') }}" class="{{ request()->routeIs('system.gateways.*') ? 'active' : '' }}"><x-platform.icon name="card"/> Payment gateways</a>
+            <a href="{{ route('system.fiscalisation.index') }}" class="{{ request()->routeIs('system.fiscalisation.*') ? 'active' : '' }}"><x-platform.icon name="file-text"/> Fiscalisation</a>
             <a href="{{ route('system.enquiries.index') }}" class="{{ request()->routeIs('system.enquiries.*') ? 'active' : '' }}"><x-platform.icon name="mail"/> Enquiries</a>
             <a href="{{ route('system.companies.index') }}"><x-platform.icon name="briefcase"/> Companies</a>
             <a href="{{ route('system.users.index') }}"><x-platform.icon name="users"/> Users</a>
@@ -180,6 +182,7 @@
     </aside>
     <main>
         @if(session('success'))<div class="flash success" role="status"><x-platform.icon name="check" size="18"/>{{ session('success') }}</div>@endif
+        @if(session('warning'))<div class="flash warning" role="status"><x-platform.icon name="alert" size="18"/>{{ session('warning') }}</div>@endif
         @if(session('error') || $errors->any())<div class="flash error" role="alert"><x-platform.icon name="alert" size="18"/>{{ session('error') ?? $errors->first() }}</div>@endif
         @yield('content')
     </main>

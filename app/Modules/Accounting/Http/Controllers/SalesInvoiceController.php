@@ -9,7 +9,6 @@ use App\Modules\Accounting\Models\Customer;
 use App\Modules\Accounting\Models\SalesInvoice;
 use App\Modules\Accounting\Services\CommercialPostingService;
 use App\Modules\Accounting\Services\ZimraFdmsService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -43,7 +42,8 @@ class SalesInvoiceController extends Controller
     {
         $invoice->load(['customer', 'lines.revenueAccount']);
         $einvoice = $zimra->documentFor($invoice);
-        return view('accounting.ar.invoices.show', compact('invoice', 'einvoice'));
+        $fiscalActive = $zimra->isActiveFor((int) $invoice->company_id);
+        return view('accounting.ar.invoices.show', compact('invoice', 'einvoice', 'fiscalActive'));
     }
 
     public function edit(SalesInvoice $invoice): View|RedirectResponse
@@ -70,35 +70,45 @@ class SalesInvoiceController extends Controller
         return redirect()->route('accounting.ar.invoices.index')->with('success', 'Draft invoice deleted.');
     }
 
-    public function post(CommercialPostingService $postingService, SalesInvoice $invoice): RedirectResponse
+    public function post(CommercialPostingService $postingService, SalesInvoice $invoice, ZimraFdmsService $zimra): RedirectResponse
     {
         $postingService->postSalesInvoice($invoice);
-        return back()->with('success', 'Invoice posted to the general ledger.');
+        $message = 'Invoice posted to the general ledger.';
+
+        // Posting fiscalises automatically when the company has it switched on; report the outcome.
+        $device = $zimra->deviceFor((int) $invoice->company_id);
+        if ($device?->isActive() && $device->auto_submit) {
+            $document = $zimra->documentFor($invoice);
+            if ($document?->authority_reference) {
+                $message .= ' Fiscalised with ZIMRA (receipt ID '.$document->authority_reference.').';
+            } else {
+                return back()->with('success', $message)->with('warning', 'ZIMRA fiscalisation did not go through: '.(data_get($document?->payload, 'error') ?? 'unknown error').' Use “Send to ZIMRA” to retry.');
+            }
+        }
+
+        return back()->with('success', $message);
     }
 
     public function submitToZimra(ZimraFdmsService $zimra, SalesInvoice $invoice): RedirectResponse
     {
+        if ($invoice->status === 'draft') {
+            return back()->with('error', 'Post the invoice before sending it to ZIMRA.');
+        }
         try {
             $document = $zimra->submitInvoice($invoice);
         } catch (Throwable $exception) {
             return back()->with('error', $exception->getMessage());
         }
 
-        return back()->with('success', 'Invoice submitted to ZIMRA FDMS. Receipt ID: '.$document->authority_reference);
+        return back()->with('success', 'Invoice fiscalised with ZIMRA FDMS. Receipt ID: '.$document->authority_reference.'.');
     }
 
-    public function pdf(SalesInvoice $invoice, ZimraFdmsService $zimra): Response
+    public function pdf(SalesInvoice $invoice, \App\Modules\Accounting\Services\InvoicePdfService $pdfs): Response
     {
-        $invoice->load(['customer', 'lines']);
-
-        $pdf = Pdf::loadView('accounting.ar.invoices.pdf', [
-            'invoice' => $invoice,
-            'customer' => $invoice->customer,
-            'company' => $invoice->customer?->company,
-            'einvoice' => $zimra->documentFor($invoice),
-        ])->setPaper('a4', 'portrait');
-
-        return $pdf->download('invoice-'.$invoice->invoice_number.'.pdf');
+        return response($pdfs->render($invoice, 'staff'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$pdfs->filename($invoice).'"',
+        ]);
     }
 
     private function formData(SalesInvoice $invoice): array

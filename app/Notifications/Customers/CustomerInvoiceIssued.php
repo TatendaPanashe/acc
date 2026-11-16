@@ -5,7 +5,6 @@ namespace App\Notifications\Customers;
 use App\Models\Company;
 use App\Modules\Accounting\Models\SalesInvoice;
 use App\Notifications\AppMailNotification;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class CustomerInvoiceIssued extends AppMailNotification
@@ -19,7 +18,8 @@ class CustomerInvoiceIssued extends AppMailNotification
         $invoice = SalesInvoice::withoutGlobalScopes()->with(['customer', 'lines'])->findOrFail($this->invoice->id);
         $company = Company::find($invoice->company_id);
         $cur = $invoice->currency;
-        $pdf = Pdf::loadView('portal.invoice-pdf', ['customer' => $invoice->customer, 'invoice' => $invoice, 'company' => $company])->setPaper('a4', 'portrait')->output();
+        $einvoice = app(\App\Modules\Accounting\Services\ZimraFdmsService::class)->documentFor($invoice);
+        $pdf = app(\App\Modules\Accounting\Services\InvoicePdfService::class)->render($invoice, 'portal');
 
         $rows = $invoice->lines->map(fn ($l) => [
             $l->description.((float) $l->quantity !== 1.0 ? ' × '.self::number($l->quantity) : ''),
@@ -44,6 +44,7 @@ class CustomerInvoiceIssued extends AppMailNotification
                 'Due date' => $invoice->due_date?->format('d M Y'),
                 'Customer number' => $invoice->customer?->customer_number,
                 'VAT number' => $company?->vat_number,
+                'ZIMRA verification code' => $einvoice?->authority_reference ? (data_get($einvoice->payload, 'verification_code') ?? null) : null,
             ], 'Invoice details')
             ->attachData($pdf, 'invoice-'.$invoice->invoice_number.'.pdf', ['mime' => 'application/pdf']);
 

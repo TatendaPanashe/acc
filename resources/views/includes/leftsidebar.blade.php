@@ -155,6 +155,7 @@
                     </a>
                     <ul class="ml-menu">
                         <li><a href="{{ route('system.companies.index') }}">Companies</a></li>
+                        <li><a href="{{ route('system.fiscalisation.index') }}">Fiscalisation (ZIMRA)</a></li>
                         <li><a href="{{ route('system.users.index') }}">Users & Assignments</a></li>
                     </ul>
                 </li>
