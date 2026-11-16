@@ -111,6 +111,37 @@ class NotificationsTest extends TestCase
         Notification::assertNotSentTo($user, SubscriptionChanged::class);
     }
 
+    public function test_sign_up_works_from_a_browser_still_holding_a_deleted_users_session(): void
+    {
+        $this->app['auth']->forgetGuards(); // a fresh browser visit: no one signed in yet
+        $stale = [auth()->guard()->getName() => 999999]; // ...but the session remembers a user that no longer exists
+
+        $this->withSession($stale)->post('/register', ['name' => 'Tatenda', 'email' => 'tatenda@example.com', 'password' => 'password123', 'password_confirmation' => 'password123'])
+            ->assertSessionHasNoErrors();
+
+        $user = User::where('email', 'tatenda@example.com')->firstOrFail();
+        $this->assertNull(DB::table('platform_subscription_events')->where('company_id', $user->company_id)->where('type', 'trial_started')->value('user_id'));
+        Notification::assertSentTo($user, WelcomeToWorkspace::class);
+    }
+
+    public function test_web_requests_send_after_the_response_without_a_queue_worker(): void
+    {
+        config(['notifications.delivery' => 'after_response', 'queue.default' => 'database']);
+        $console = new \ReflectionProperty($this->app, 'isRunningInConsole');
+        $console->setValue($this->app, false); // as in a web request
+
+        try {
+            app(Notifier::class)->send('account.welcome', $this->admin, new WelcomeToWorkspace($this->admin), $this->company->id);
+            Notification::assertNotSentTo($this->admin, WelcomeToWorkspace::class); // not while the page is being served
+
+            $this->app->terminate(); // the browser has its response
+            Notification::assertSentTo($this->admin, WelcomeToWorkspace::class);
+            $this->assertSame(0, DB::table('jobs')->count()); // nothing left waiting for a worker
+        } finally {
+            $console->setValue($this->app, true);
+        }
+    }
+
     public function test_subscription_payments_send_a_receipt_or_a_failure_notice(): void
     {
         $this->post(route('billing.checkout'), ['plan' => 'professional', 'billing_cycle' => 'monthly'])->assertSessionHasNoErrors();

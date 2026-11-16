@@ -100,13 +100,32 @@ class Notifier
         return $once ? DB::table('notification_log')->insertOrIgnore($row) > 0 : DB::table('notification_log')->insert($row);
     }
 
+    /**
+     * Delivery (config notifications.delivery):
+     *  - "after_response" (default): sent by this PHP process once the page has been returned to the browser,
+     *    so no queue worker is needed and the user does not wait for the mail server;
+     *  - "queue": handed to the queue (needs `php artisan queue:work` running; adds retries);
+     *  - "sync": sent immediately.
+     * Console commands (scheduler) always send immediately unless "queue" is chosen.
+     */
     private function deliver(string $event, object $notifiable, BaseNotification $notification): void
     {
-        try {
-            Notification::send($notifiable, $notification);
-        } catch (\Throwable $e) {
-            Log::error("Email notification [{$event}] failed: ".$e->getMessage());
-            report($e);
+        $mode = config('notifications.delivery', 'after_response');
+        $attempt = function (callable $send) use ($event) {
+            try {
+                $send();
+            } catch (\Throwable $e) {
+                Log::error("Email notification [{$event}] failed: ".$e->getMessage());
+                report($e);
+            }
+        };
+
+        if ($mode === 'queue') {
+            $attempt(fn () => Notification::send($notifiable, $notification));
+        } elseif ($mode === 'after_response' && !app()->runningInConsole()) {
+            app()->terminating(fn () => $attempt(fn () => Notification::sendNow($notifiable, $notification)));
+        } else {
+            $attempt(fn () => Notification::sendNow($notifiable, $notification));
         }
     }
 }

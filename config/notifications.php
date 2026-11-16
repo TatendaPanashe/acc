@@ -17,6 +17,10 @@
 */
 
 return [
+    // How emails are sent: "after_response" (default; no queue worker needed, sent right after the page
+    // loads), "queue" (needs `php artisan queue:work` running; adds automatic retries) or "sync".
+    'delivery' => env('NOTIFICATIONS_DELIVERY', 'after_response'),
+
     // Platform operator inbox for new sign-ups (null disables the alert).
     'platform_email' => env('NOTIFICATIONS_PLATFORM_EMAIL', env('SITE_CONTACT_EMAIL', env('BILLING_SALES_EMAIL'))),
 

@@ -308,7 +308,8 @@ class SubscriptionService
             'mrr_after' => $after,
             'mrr_delta' => $delta,
             'details' => $details ?: null,
-            'user_id' => auth()->id(),
+            // The signed-in user's id, never a stale id left in an old session (auth()->id() falls back to it).
+            'user_id' => auth()->user()?->getKey(),
             'occurred_at' => now(),
         ]);
 
