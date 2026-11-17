@@ -83,9 +83,11 @@ class ClientPortalAuthenticationTest extends TestCase
             ->assertRedirect(route('portal.password.change'));
 
         $this->get('/client/dashboard')->assertRedirect(route('portal.password.change'));
+        $this->get(route('portal.password.change'))->assertOk()->assertSee('Choose your password')->assertSee('At least 8 characters');
 
         $this->post('/client/password/change', ['password' => $password, 'password_confirmation' => $password])
             ->assertSessionHasErrors('password');
+        $this->get(route('portal.password.change'))->assertSee('Choose a password different from your temporary password.');
 
         $this->post('/client/password/change', ['password' => 'my-new-pass-123', 'password_confirmation' => 'my-new-pass-123'])
             ->assertRedirect(route('portal.dashboard'));
