@@ -15,3 +15,4 @@ Artisan::command('inspire', function () {
 \Illuminate\Support\Facades\Schedule::command('ai:refresh')->dailyAt('02:30')->withoutOverlapping();
 \Illuminate\Support\Facades\Schedule::command('notifications:daily')->dailyAt('07:00')->withoutOverlapping();
 \Illuminate\Support\Facades\Schedule::command('zimra:close-days')->dailyAt('23:50')->withoutOverlapping();
+\Illuminate\Support\Facades\Schedule::command('backup:database --trigger=scheduled')->dailyAt(config('backup.daily_at', '23:59'))->timezone(config('backup.timezone', 'Africa/Harare'))->withoutOverlapping();

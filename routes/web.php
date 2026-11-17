@@ -392,6 +392,12 @@ Route::middleware(['auth', 'superuser'])->prefix('system')->name('system.')->gro
         Route::post('/{company}/day/open', 'openDay')->name('day.open');
         Route::post('/{company}/day/close', 'closeDay')->name('day.close');
     });
+    Route::controller(\App\Http\Controllers\Platform\BackupController::class)->prefix('backups')->name('backups.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{name}/download', 'download')->name('download');
+        Route::delete('/{name}', 'destroy')->name('destroy');
+    });
     Route::get('/enquiries', [\App\Http\Controllers\Platform\EnquiryController::class, 'index'])->name('enquiries.index');
     Route::post('/enquiries/{enquiry}/handled', [\App\Http\Controllers\Platform\EnquiryController::class, 'handled'])->name('enquiries.handled');
     Route::controller(\App\Http\Controllers\Platform\PlatformBillingController::class)->group(function () {

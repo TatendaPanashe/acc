@@ -165,6 +165,7 @@
             <a href="{{ route('system.coupons.index') }}" class="{{ request()->routeIs('system.coupons.*') ? 'active' : '' }}"><x-platform.icon name="gift"/> Coupons</a>
             <a href="{{ route('system.gateways.index') }}" class="{{ request()->routeIs('system.gateways.*') ? 'active' : '' }}"><x-platform.icon name="card"/> Payment gateways</a>
             <a href="{{ route('system.fiscalisation.index') }}" class="{{ request()->routeIs('system.fiscalisation.*') ? 'active' : '' }}"><x-platform.icon name="file-text"/> Fiscalisation</a>
+            <a href="{{ route('system.backups.index') }}" class="{{ request()->routeIs('system.backups.*') ? 'active' : '' }}"><x-platform.icon name="shield"/> Backups</a>
             <a href="{{ route('system.enquiries.index') }}" class="{{ request()->routeIs('system.enquiries.*') ? 'active' : '' }}"><x-platform.icon name="mail"/> Enquiries</a>
             <a href="{{ route('system.companies.index') }}"><x-platform.icon name="briefcase"/> Companies</a>
             <a href="{{ route('system.users.index') }}"><x-platform.icon name="users"/> Users</a>
