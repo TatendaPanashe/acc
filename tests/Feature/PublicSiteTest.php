@@ -63,4 +63,16 @@ class PublicSiteTest extends TestCase
         Enquiry::create(['name' => 'Rudo', 'email' => 'rudo@example.com', 'topic' => 'sales', 'message' => 'Pricing question please']);
         $this->get(route('system.enquiries.index'))->assertOk()->assertSee('Pricing question please');
     }
+
+    public function test_services_list_fiscalisation_with_a_previewable_sample_invoice(): void
+    {
+        $this->get(route('site.services'))->assertOk()
+            ->assertSee('ZIMRA fiscalisation')
+            ->assertSee('samples/fiscal-tax-invoice-sample.pdf')
+            ->assertSee('samples/fiscal-tax-invoice-sample.jpg');
+        $this->get(route('site.home'))->assertOk()->assertSee('ZIMRA fiscalisation');
+
+        $this->assertStringStartsWith('%PDF', file_get_contents(public_path('samples/fiscal-tax-invoice-sample.pdf')));
+        $this->assertFileExists(public_path('samples/fiscal-tax-invoice-sample.jpg'));
+    }
 }

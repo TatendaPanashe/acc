@@ -22,7 +22,7 @@ return [
             'Customer receipts matched to invoices',
             'Credit notes, aging and dunning',
             'Client portal where customers view invoices and report payments',
-            'Submit invoices to ZIMRA FDMS',
+            'Fiscal tax invoices signed by ZIMRA FDMS',
         ]],
         'payables' => ['Purchases & payables', 'card', 'Control what you owe and pay on time.', [
             'Supplier invoices posted after approval',
@@ -58,6 +58,15 @@ return [
             'ZIMRA TIN and NSSA details captured at setup',
             'Statutory report pack in Excel: trial balance, P&L, balance sheet, VAT, aging',
         ]],
+        'fiscal' => ['ZIMRA fiscalisation', 'shield', 'Fiscal tax invoices, signed by ZIMRA as you post them.', [
+            'Connects straight to ZIMRA FDMS: no fiscal box or middleware rental',
+            'Every posted invoice is signed and sent to ZIMRA automatically',
+            'Fiscal tax invoice PDFs with the QR code and verification code',
+            'Buyer and seller TIN and VAT numbers, VAT analysis by rate',
+            'Fiscal days open by themselves and close every night',
+            'If ZIMRA is unreachable the invoice still posts, ready to resend',
+            'Device registration and set-up done for you by our team',
+        ], ['pdf' => 'samples/fiscal-tax-invoice-sample.pdf', 'image' => 'samples/fiscal-tax-invoice-sample.jpg', 'label' => 'Sample fiscal tax invoice']],
         'assets' => ['Fixed assets', 'briefcase', 'Depreciation without spreadsheets.', [
             'Asset register with cost, net book value and status',
             'Monthly depreciation runs: straight line or declining balance',

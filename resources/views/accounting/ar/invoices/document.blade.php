@@ -8,6 +8,7 @@
 --}}
 @php
     $context = $context ?? 'staff';
+    $sample = $sample ?? false; // marketing sample: watermarked, never a real tax document
     $cur = $invoice->currency;
     $money = fn ($v) => number_format((float) $v, 2);
     $qty = fn ($v) => rtrim(rtrim(number_format((float) $v, 3), '0'), '.');
@@ -128,7 +129,7 @@
 </style>
 </head>
 <body>
-@if($draft)<div class="watermark">DRAFT</div>@endif
+@if($sample)<div class="watermark" style="color: rgba(30, 58, 138, 0.07);">SAMPLE</div>@elseif($draft)<div class="watermark">DRAFT</div>@endif
 
 <div class="page-footer">
     <table><tr>
@@ -326,6 +327,7 @@
 @endif
 
 <div class="section muted" style="text-align: center;">
+    @if($sample)<strong>Sample for illustration only:</strong> fictional businesses, signed by the ZIMRA FDMS test simulator. Not a valid tax invoice.<br>@endif
     Thank you for your business.@if($company?->email) Questions about this invoice? Contact {{ $company->email }}@if($company?->phone) or {{ $company->phone }}@endif.@endif
 </div>
 </body>

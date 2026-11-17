@@ -33,7 +33,24 @@
     .compare .group td { background: var(--bg); font-weight: 700; text-align: left; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
     .yes { color: var(--teal); font-weight: 700; } .no { color: #b7c0cc; }
     .table-wrap { overflow-x: auto; }
+    .module.has-preview > div { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 32px; align-items: start; }
+    .module.has-preview .ticks { grid-template-columns: minmax(0, 1fr); }
+    .doc-preview { margin: 0; }
+    .doc-thumb { display: block; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: 12px; background: #fff; cursor: zoom-in; overflow: hidden; box-shadow: 0 10px 30px rgba(22, 32, 51, .10); transition: transform .15s, box-shadow .15s; }
+    .doc-thumb:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(22, 32, 51, .16); }
+    .doc-thumb:focus-visible { outline: 3px solid rgba(25, 87, 194, .4); outline-offset: 3px; }
+    .doc-thumb img { display: block; width: 100%; height: auto; }
+    .doc-preview figcaption { font-size: 13px; color: var(--muted); margin-top: 10px; text-align: center; }
+    .doc-preview .doc-actions { display: flex; gap: 8px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+    .doc-preview .doc-actions .btn { padding: 8px 14px; font-size: 14px; }
+    dialog.pdf-viewer { width: min(920px, 94vw); height: min(92vh, 1200px); padding: 0; border: 0; border-radius: 16px; overflow: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, .35); }
+    dialog.pdf-viewer::backdrop { background: rgba(15, 23, 42, .6); }
+    .pdf-viewer .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--bg); }
+    .pdf-viewer .bar strong { font-size: 15px; }
+    .pdf-viewer .bar .btn { padding: 7px 12px; font-size: 14px; }
+    .pdf-viewer iframe { display: block; width: 100%; height: calc(100% - 59px); border: 0; background: #525659; }
     @media (max-width: 980px) { .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 900px) { .module.has-preview > div { grid-template-columns: minmax(0, 1fr); } .doc-preview { max-width: 320px; } }
     @media (max-width: 700px) { .plans, .module .ticks { grid-template-columns: minmax(0, 1fr); } .module { grid-template-columns: minmax(0, 1fr); } }
 @endsection
 
@@ -52,16 +69,41 @@
 
 <section style="padding-top:24px">
     <div class="wrap">
-        @foreach(config('site.modules') as $key => [$title, $icon, $summary, $points])
-            <article class="module" id="{{ $key }}">
+        @foreach(config('site.modules') as $key => $module)
+            @php [$title, $icon, $summary, $points] = $module; $preview = $module[4] ?? null; @endphp
+            <article class="module {{ $preview ? 'has-preview' : '' }}" id="{{ $key }}">
                 <span class="icon-badge {{ $loop->odd ? '' : 'teal' }}"><x-platform.icon :name="$icon" size="26"/></span>
                 <div>
-                    <h2>{{ $title }}</h2>
-                    <p class="muted" style="margin:0">{{ $summary }}</p>
-                    <ul class="ticks">@foreach($points as $point)<li>{{ $point }}</li>@endforeach</ul>
+                    <div>
+                        <h2>{{ $title }}</h2>
+                        <p class="muted" style="margin:0">{{ $summary }}</p>
+                        <ul class="ticks">@foreach($points as $point)<li>{{ $point }}</li>@endforeach</ul>
+                    </div>
+                    @if($preview)
+                        <figure class="doc-preview">
+                            <button type="button" class="doc-thumb" data-pdf="{{ asset($preview['pdf']) }}" data-title="{{ $preview['label'] }}" aria-label="Preview the {{ strtolower($preview['label']) }} (PDF)">
+                                <img src="{{ asset($preview['image']) }}" alt="{{ $preview['label'] }}: a fiscal tax invoice with ZIMRA QR code and verification code" loading="lazy" width="1100" height="1556">
+                            </button>
+                            <figcaption>{{ $preview['label'] }}, fictional data</figcaption>
+                            <div class="doc-actions">
+                                <a class="btn btn-ghost" href="{{ asset($preview['pdf']) }}" target="_blank" rel="noopener">Open PDF</a>
+                                <a class="btn btn-ghost" href="{{ asset($preview['pdf']) }}" download>Download</a>
+                            </div>
+                        </figure>
+                    @endif
                 </div>
             </article>
         @endforeach
+        <dialog class="pdf-viewer" id="pdf-viewer" aria-labelledby="pdf-viewer-title">
+            <div class="bar">
+                <strong id="pdf-viewer-title">Sample</strong>
+                <div style="display:flex; gap:8px">
+                    <a class="btn btn-ghost" id="pdf-viewer-open" href="#" target="_blank" rel="noopener">Open in new tab</a>
+                    <button type="button" class="btn btn-ghost" id="pdf-viewer-close" aria-label="Close preview">Close</button>
+                </div>
+            </div>
+            <iframe title="PDF preview" id="pdf-viewer-frame"></iframe>
+        </dialog>
     </div>
 </section>
 
@@ -141,6 +183,27 @@
 
 @push('scripts')
 <script>
+(function () {
+    var dialog = document.getElementById('pdf-viewer');
+    if (!dialog) return;
+    var frame = document.getElementById('pdf-viewer-frame');
+    document.querySelectorAll('.doc-thumb').forEach(function (thumb) {
+        thumb.addEventListener('click', function () {
+            // Phones rarely show PDFs inside a page: open the file itself there.
+            if (!dialog.showModal || window.matchMedia('(max-width: 700px)').matches) {
+                window.open(thumb.dataset.pdf, '_blank', 'noopener');
+                return;
+            }
+            document.getElementById('pdf-viewer-title').textContent = thumb.dataset.title;
+            document.getElementById('pdf-viewer-open').href = thumb.dataset.pdf;
+            frame.src = thumb.dataset.pdf + '#view=FitH';
+            dialog.showModal();
+        });
+    });
+    document.getElementById('pdf-viewer-close').addEventListener('click', function () { dialog.close(); });
+    dialog.addEventListener('click', function (e) { if (e.target === dialog) dialog.close(); });
+    dialog.addEventListener('close', function () { frame.src = 'about:blank'; });
+})();
 document.querySelectorAll('input[name=cycle]').forEach(function (radio) {
     radio.addEventListener('change', function () {
         var c = this.value;

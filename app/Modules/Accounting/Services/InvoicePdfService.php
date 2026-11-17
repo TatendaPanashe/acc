@@ -17,7 +17,7 @@ class InvoicePdfService
     }
 
     /** @param  string  $context  staff | portal */
-    public function render(SalesInvoice $invoice, string $context = 'staff'): string
+    public function render(SalesInvoice $invoice, string $context = 'staff', bool $sample = false): string
     {
         $invoice = SalesInvoice::withoutGlobalScopes()->with(['customer', 'lines'])->findOrFail($invoice->id);
 
@@ -27,6 +27,7 @@ class InvoicePdfService
             'company' => Company::find($invoice->company_id),
             'einvoice' => $this->fdms->documentFor($invoice),
             'context' => $context,
+            'sample' => $sample,
         ])->setPaper('a4', 'portrait');
 
         // "Page x of y" needs the finished page count, so it is drawn after layout.
