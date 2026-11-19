@@ -155,7 +155,7 @@
 <div class="shell">
     <aside class="sidebar">
         <a href="{{ route('system.platform.dashboard') }}" class="brand" style="text-decoration:none">
-            <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 2l13 7.5v15L17 32 4 24.5v-15z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M11.5 17.5l4 4 7-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <x-brand-mark size="38"/>
             <span>{{ config('platform.name') }}<small>Platform</small></span>
         </a>
         <nav class="nav" aria-label="Platform">

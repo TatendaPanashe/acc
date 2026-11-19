@@ -78,6 +78,9 @@
         .site-footer { background: #0f1726; color: #c6cfdc; padding: 56px 0 28px; }
         .site-footer a { color: #e7ecf3; text-decoration: none; }
         .site-footer a:hover { text-decoration: underline; }
+        .foot-logo { display: inline-block; background: #fff; border-radius: 12px; padding: 8px; margin-bottom: 6px; line-height: 0; }
+        .foot-logo img { width: 220px; height: auto; border-radius: 6px; }
+        .brand-by { display: block; font-size: 11px; font-weight: 600; color: var(--muted, #64748b); letter-spacing: .02em; line-height: 1.1; }
         .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.3fr; gap: 32px; }
         .foot-grid h4 { color: #fff; font-size: 14px; text-transform: uppercase; letter-spacing: .08em; margin: 0 0 14px; }
         .foot-grid ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
@@ -108,8 +111,8 @@
 <header class="site-header">
     <div class="wrap">
         <a href="{{ route('site.home') }}" class="brand" aria-label="acc263 home">
-            <svg width="32" height="32" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 2l13 7.5v15L17 32 4 24.5v-15z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M11.5 17.5l4 4 7-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            acc263
+            <x-brand-mark size="40"/>
+            <span>acc263<span class="brand-by">by Kodomo Technologies</span></span>
         </a>
         <nav class="nav" aria-label="Main">
             @foreach($links as $route => $label)
@@ -142,7 +145,7 @@
     <div class="wrap">
         <div class="foot-grid">
             <div>
-                <a href="{{ route('site.home') }}" class="brand" style="color:#fff">acc263</a>
+                <a href="{{ route('site.home') }}" class="foot-logo" aria-label="Kodomo Technologies, acc263 home"><img src="{{ asset('assets/images/kodomo-logo.png') }}" alt="Kodomo Technologies: Let's build..." width="220"></a>
                 <p style="max-width:340px">Online accounting, inventory and point of sale for businesses in Zimbabwe and the region, with multi-currency and ZIMRA-ready tax built in.</p>
             </div>
             <div>

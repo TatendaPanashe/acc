@@ -113,7 +113,7 @@
 <div class="shell">
     <aside class="brand-panel" aria-hidden="true">
         <a href="{{ route('site.home') }}" class="logo" tabindex="-1">
-            <svg width="32" height="32" viewBox="0 0 34 34"><path d="M17 2l13 7.5v15L17 32 4 24.5v-15z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M11.5 17.5l4 4 7-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <x-brand-mark size="34" tile/>
             acc263
         </a>
         <div class="hero">
@@ -129,7 +129,7 @@
     <main class="form-side">
         <div class="mobile-brand">
             <a href="{{ route('site.home') }}" class="logo">
-                <svg width="28" height="28" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 2l13 7.5v15L17 32 4 24.5v-15z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M11.5 17.5l4 4 7-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <x-brand-mark size="34" tile/>
                 acc263
             </a>
             <p>@yield('mobile_tagline')</p>

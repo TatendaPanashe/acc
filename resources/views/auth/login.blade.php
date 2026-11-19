@@ -64,8 +64,9 @@
         place-items: center;
         border-radius: 8px;
         color: #fff;
-        background: linear-gradient(135deg, var(--acc263-blue), var(--acc263-teal));
-        box-shadow: 0 12px 24px rgba(25, 87, 194, .22);
+        background: #fff;
+        border: 1px solid rgba(25, 87, 194, .14);
+        box-shadow: 0 12px 24px rgba(25, 87, 194, .14);
     }
 
     .acc-login-panel h1 {
@@ -212,7 +213,7 @@
     <section class="acc-login-shell">
         <div class="acc-login-panel">
             <div class="acc-brand">
-                <div class="acc-brand-mark"><i class="fas fa-chart-line"></i></div>
+                <div class="acc-brand-mark"><img src="{{ asset('assets/images/kodomo-mark.png') }}" alt="" width="36" height="36"></div>
                 <span>acc263</span>
             </div>
 

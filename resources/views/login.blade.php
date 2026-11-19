@@ -19,7 +19,7 @@
 				<form id="login" method="POST" action="{{ route('login') }}" tabindex="500">
 				@csrf
 				<div class=" image">
-                                <img src="assets/images/hrlogo.png" class="user-img-style" alt="User Image" />
+                                <img src="{{ asset('assets/images/kodomo-logo.png') }}" class="user-img-style" alt="Kodomo Technologies" />
                             </div>
 					<h3>Login</h3>
                     
@@ -71,7 +71,7 @@
                
 				@csrf
 				<div class=" image">
-                                <img src="assets/images/hrlogo.png" class="user-img-style" alt="User Image" />
+                                <img src="{{ asset('assets/images/kodomo-logo.png') }}" class="user-img-style" alt="Kodomo Technologies" />
                             </div>
 					<h3>Apply</h3>
                     
