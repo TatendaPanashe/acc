@@ -26,6 +26,6 @@ class SuperuserSeeder extends Seeder
                 'is_superuser' => true,
                 'password' => Hash::make('Test123!'),
             ]
-        );
+        )->forceFill(['email_verified_at' => now()])->save();
     }
 }

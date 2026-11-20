@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Auth\Concerns\RedirectsAfterLogin;
 use App\Http\Controllers\Controller;
 use App\Modules\Accounting\Services\PortalCredentialService;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -22,7 +23,7 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    use AuthenticatesUsers, RedirectsAfterLogin;
 
     /**
      * Where to redirect users after login.
@@ -85,26 +86,7 @@ class LoginController extends Controller
 
     protected function authenticated(Request $request, $user)
     {
-        if ($user->is_superuser) {
-            return redirect()->intended(route('system.platform.dashboard'));
-        }
-
-        if (!$user->company || !$user->company->status) {
-            $this->guard()->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return redirect()->route('login')->withErrors([
-                'login' => 'Your company account is inactive or suspended. Contact the system administrator.',
-            ]);
-        }
-
-        if (!$user->is_superuser && !$user->company->onboarding_completed_at) {
-            // Admins continue the setup wizard; other roles see "workspace not ready".
-            return redirect()->route('dashboard');
-        }
-
-        return redirect()->intended($this->redirectPath());
+        return $this->redirectAfterLogin($request, $user);
     }
 
     private function attemptClientPortalLogin(Request $request): bool

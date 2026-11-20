@@ -82,11 +82,17 @@ Route::prefix('staff')->name('staff.')->controller(\App\Modules\Payroll\Http\Con
 });
 Route::post('/webhooks/{source}', [WebhookEventController::class, 'store'])->name('webhooks.store');
 
-Auth::routes();
+Auth::routes(['verify' => true]);
+
+// "Continue with Google" on the sign-in and sign-up pages.
+Route::controller(\App\Http\Controllers\Auth\GoogleAuthController::class)->prefix('auth/google')->name('auth.google.')->group(function () {
+    Route::get('/redirect', 'redirect')->middleware('throttle:20,1')->name('redirect');
+    Route::get('/callback', 'callback')->middleware('throttle:20,1')->name('callback');
+});
 
 
 // Company onboarding wizard (company admin) — reachable before setup is complete.
-Route::middleware(['auth', 'permission'])->prefix('company')->group(function () {
+Route::middleware(['auth', 'verified', 'permission'])->prefix('company')->group(function () {
     Route::controller(CompanySetupController::class)->prefix('setup')->name('company.setup.')->group(function () {
         Route::get('/', 'edit')->name('edit');
         Route::put('/', 'update')->name('update');
@@ -103,7 +109,7 @@ Route::middleware(['auth', 'permission'])->prefix('company')->group(function () 
 // Every route below is checked against config/permissions.php by the `permission` middleware.
 // Subscription billing (company admin). Reachable while the workspace is locked.
 Route::post('/billing/webhooks/{provider}', [\App\Http\Controllers\Billing\BillingController::class, 'webhook'])->name('billing.webhooks');
-Route::middleware(['auth', 'company.setup', 'permission'])->prefix('billing')->name('billing.')
+Route::middleware(['auth', 'verified', 'company.setup', 'permission'])->prefix('billing')->name('billing.')
     ->controller(\App\Http\Controllers\Billing\BillingController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/locked', 'locked')->name('locked');
@@ -116,7 +122,7 @@ Route::middleware(['auth', 'company.setup', 'permission'])->prefix('billing')->n
     });
 
 // Help Centre: open to every signed-in user, including during setup or while billing is locked.
-Route::middleware('auth')->prefix('help')->name('help.')->controller(\App\Http\Controllers\HelpController::class)->group(function () {
+Route::middleware(['auth', 'verified'])->prefix('help')->name('help.')->controller(\App\Http\Controllers\HelpController::class)->group(function () {
     Route::get('/', 'index')->name('index');
     Route::get('/manual.pdf', 'manual')->name('manual');
     Route::get('/setup-checklist.pdf', 'checklist')->name('checklist');
@@ -125,7 +131,7 @@ Route::middleware('auth')->prefix('help')->name('help.')->controller(\App\Http\C
     Route::get('/{slug}/pdf', 'pdf')->name('pdf');
 });
 
-Route::middleware(['auth', 'company.setup', 'subscription', 'permission', 'plan.feature', 'approval.rules'])->group(function () {
+Route::middleware(['auth', 'verified', 'company.setup', 'subscription', 'permission', 'plan.feature', 'approval.rules'])->group(function () {
     Route::get('/dashboard', AccountingDashboardController::class)->name('dashboard');
 
     Route::controller(\App\Http\Controllers\NotificationSettingsController::class)->prefix('company/notifications')->name('company.notifications.')->group(function () {
@@ -370,7 +376,7 @@ Route::middleware(['auth', 'company.setup', 'subscription', 'permission', 'plan.
     });
 });
 
-Route::middleware(['auth', 'superuser'])->prefix('system')->name('system.')->group(function () {
+Route::middleware(['auth', 'verified', 'superuser'])->prefix('system')->name('system.')->group(function () {
     Route::get('/platform', \App\Http\Controllers\Platform\PlatformDashboardController::class)->name('platform.dashboard');
     Route::controller(\App\Http\Controllers\Platform\TenantController::class)->prefix('tenants')->name('tenants.')->group(function () {
         Route::get('/', 'index')->name('index');

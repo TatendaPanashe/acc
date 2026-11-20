@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
                 'role' => 'admin',
                 'password' => bcrypt('Test123!'),
             ]
-        );
+        )->forceFill(['email_verified_at' => now()])->save();
 
         $this->call([
             SuperuserSeeder::class,

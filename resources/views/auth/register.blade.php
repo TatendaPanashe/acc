@@ -230,36 +230,43 @@
                 <h2>Create account</h2>
                 <p class="subtitle">Start a new company workspace in acc263.</p>
 
-                <form method="POST" action="{{ route('register') }}">
+                @include('auth.partials.google-button', ['intent' => 'signup'])
+
+                <form method="POST" action="{{ route('register') }}" id="register-form" novalidate>
                     @csrf
 
                     <div class="mb-3">
                         <label for="name" class="form-label">Full name</label>
-                        <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
-                        @error('name')
-                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                        @enderror
+                        <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}"
+                               required minlength="2" maxlength="100" autocomplete="name" autofocus
+                               data-pattern="^[\p{L}][\p{L}\p{M}' .\-]*$" data-pattern-message="Use letters only for your name (spaces, hyphens and apostrophes are fine).">
+                        <span class="invalid-feedback" role="alert" data-for="name">@error('name'){{ $message }}@enderror</span>
                     </div>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Email address</label>
-                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
-                        @error('email')
-                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                        @enderror
+                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}"
+                               required maxlength="255" autocomplete="email" inputmode="email" spellcheck="false">
+                        <span class="invalid-feedback" role="alert" data-for="email">@error('email'){{ $message }}@enderror</span>
+                        <small class="text-muted">We will send a link to this address to confirm it is yours.</small>
                     </div>
 
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
-                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-                        @error('password')
-                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                        @enderror
+                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password"
+                               required minlength="8" maxlength="72" autocomplete="new-password" aria-describedby="password-rules">
+                        <span class="invalid-feedback" role="alert" data-for="password">@error('password'){{ $message }}@enderror</span>
+                        <ul class="acc-pw-rules" id="password-rules" aria-live="polite">
+                            <li data-rule="length">At least 8 characters</li>
+                            <li data-rule="case">Upper- and lower-case letters</li>
+                            <li data-rule="number">At least one number</li>
+                        </ul>
                     </div>
 
                     <div class="mb-4">
                         <label for="password-confirm" class="form-label">Confirm password</label>
-                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required maxlength="72" autocomplete="new-password">
+                        <span class="invalid-feedback" role="alert" data-for="password_confirmation"></span>
                     </div>
 
                     @php $signupPlans = \App\Models\Platform\Plan::where('is_active', true)->where('is_custom', false)->orderBy('sort_order')->get(); @endphp
@@ -271,12 +278,14 @@
                                     <option value="{{ $signupPlan->code }}" @selected(old('plan', request('plan', config('platform.default_plan'))) === $signupPlan->code)>{{ $signupPlan->name }} · ${{ number_format((float) $signupPlan->monthly_price, 0) }}/month after trial</option>
                                 @endforeach
                             </select>
+                            @error('plan')<span class="invalid-feedback d-block" role="alert">{{ $message }}</span>@enderror
                             <small class="text-muted">No card needed. You can change plan any time.</small>
                         </div>
                     @endif
 
-                    <button type="submit" class="acc-submit">Start free trial</button>
+                    <button type="submit" class="acc-submit" id="register-submit">Start free trial</button>
                 </form>
+                @include('auth.partials.register-validation')
 
                 <p class="mt-4 mb-0 text-center">
                     Already have an account?

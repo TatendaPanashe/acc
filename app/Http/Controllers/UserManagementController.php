@@ -27,7 +27,7 @@ class UserManagementController extends Controller
     {
         $validated = $this->validated($request);
         $validated['is_superuser'] = false;
-        User::create($validated);
+        User::create($validated)->forceFill(['email_verified_at' => now()])->save(); // created by platform staff
 
         return redirect()->route('system.users.index')->with('success', 'User created and assigned to the company.');
     }

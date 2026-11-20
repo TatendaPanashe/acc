@@ -39,6 +39,7 @@ class TeamController extends Controller
         $user = new User($data);
         $user->company_id = $request->user()->company_id;
         $user->is_superuser = false;
+        $user->email_verified_at = now(); // added by their company admin, so no self-verification step
         $user->save();
 
         app(\App\Services\Notifications\Notifier::class)->send('team.member_added', $user,

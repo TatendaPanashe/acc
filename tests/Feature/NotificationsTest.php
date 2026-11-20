@@ -98,13 +98,18 @@ class NotificationsTest extends TestCase
 
     // ---- account & subscription ------------------------------------------------
 
-    public function test_sign_up_sends_a_welcome_email_and_alerts_the_platform(): void
+    public function test_sign_up_alerts_the_platform_and_welcomes_once_the_email_is_confirmed(): void
     {
+        $this->usersStartVerified = false;
         config(['notifications.platform_email' => 'ops@acc263.test']);
         auth()->logout();
-        $this->post('/register', ['name' => 'Tendai', 'email' => 'tendai@example.com', 'password' => 'password123', 'password_confirmation' => 'password123', 'plan' => 'essential']);
+        $this->post('/register', ['name' => 'Tendai', 'email' => 'tendai@example.com', 'password' => 'Password123', 'password_confirmation' => 'Password123', 'plan' => 'essential']);
 
         $user = User::where('email', 'tendai@example.com')->firstOrFail();
+        Notification::assertSentTo($user, \App\Notifications\Account\VerifyEmailAddress::class);
+        Notification::assertNotSentTo($user, WelcomeToWorkspace::class);
+
+        $this->get(\Illuminate\Support\Facades\URL::temporarySignedRoute('verification.verify', now()->addHour(), ['id' => $user->id, 'hash' => sha1($user->email)]));
         Notification::assertSentTo($user, WelcomeToWorkspace::class, fn ($n) => $n->trialEndsOn === '24 Jun 2026' && str_contains($n->toMail($user)->render(), 'Essential'));
         $this->assertSame(1, $this->countOnDemand('ops@acc263.test', NewSignupAlert::class));
         // Picking a plan at sign-up is not reported as a separate "plan changed" email.
@@ -116,12 +121,12 @@ class NotificationsTest extends TestCase
         $this->app['auth']->forgetGuards(); // a fresh browser visit: no one signed in yet
         $stale = [auth()->guard()->getName() => 999999]; // ...but the session remembers a user that no longer exists
 
-        $this->withSession($stale)->post('/register', ['name' => 'Tatenda', 'email' => 'tatenda@example.com', 'password' => 'password123', 'password_confirmation' => 'password123'])
+        $this->withSession($stale)->post('/register', ['name' => 'Tatenda', 'email' => 'tatenda@example.com', 'password' => 'Password123', 'password_confirmation' => 'Password123'])
             ->assertSessionHasNoErrors();
 
         $user = User::where('email', 'tatenda@example.com')->firstOrFail();
         $this->assertNull(DB::table('platform_subscription_events')->where('company_id', $user->company_id)->where('type', 'trial_started')->value('user_id'));
-        Notification::assertSentTo($user, WelcomeToWorkspace::class);
+        $this->assertAuthenticatedAs($user);
     }
 
     public function test_web_requests_send_after_the_response_without_a_queue_worker(): void

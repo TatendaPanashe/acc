@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Company;
-use App\Models\User;
+use App\Services\Auth\WorkspaceRegistrar;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class RegisterController extends Controller
 {
@@ -24,7 +24,9 @@ class RegisterController extends Controller
     |
     */
 
-    use RegistersUsers;
+    use RegistersUsers {
+        register as protected registerUser;
+    }
 
     /**
      * Where to redirect users after registration.
@@ -43,6 +45,17 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
+    /** Tidy the input (trim, single spaces, lower-case email) before it is validated and saved. */
+    public function register(Request $request)
+    {
+        $request->merge([
+            'name' => Str::squish((string) $request->input('name')),
+            'email' => Str::lower(trim((string) $request->input('email'))),
+        ]);
+
+        return $this->registerUser($request);
+    }
+
     /**
      * Get a validator for an incoming registration request.
      *
@@ -52,69 +65,44 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'plan' => ['nullable', \Illuminate\Validation\Rule::exists('platform_plans', 'code')->where('is_active', 1)->where('is_custom', 0)],
+            // Letters (any language), spaces, apostrophes, hyphens and full stops; at least two letters.
+            'name' => ['required', 'string', 'min:2', 'max:100', "regex:/^[\\p{L}][\\p{L}\\p{M}' .\\-]*$/u"],
+            'email' => ['required', 'string', 'max:255', 'email:rfc,strict', Rule::unique('users', 'email')],
+            'password' => ['required', 'string', 'max:72', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers(), Rule::notIn([$data['email'] ?? ''])],
+            'plan' => ['nullable', Rule::exists('platform_plans', 'code')->where('is_active', 1)->where('is_custom', 0)],
+        ], [
+            'name.regex' => 'Use letters only for your name (spaces, hyphens and apostrophes are fine).',
+            'email.email' => 'Enter a valid email address, like you@company.co.zw.',
+            'email.unique' => 'An account with this email already exists. Sign in instead, or reset your password.',
+            'password.confirmed' => 'The two passwords do not match.',
+            'password.not_in' => 'Your password cannot be the same as your email address.',
+            'password.max' => 'Use a password of at most 72 characters.',
+            'plan.exists' => 'Choose one of the plans in the list.',
+        ], [
+            'name' => 'full name',
+            'email' => 'email address',
         ]);
     }
 
     /**
-     * Create a new user instance after a valid registration.
+     * Create the workspace and its first admin user after a valid registration.
      *
      * @param  array  $data
      * @return \App\Models\User
      */
     protected function create(array $data)
     {
-        return DB::transaction(function () use ($data) {
-            $company = Company::create([
-                'name' => Str::limit('New workspace for '.$data['name'].' '.now()->format('YmdHis'), 255, ''),
-                'status' => true,
-            ]);
-
-            // The trial starts on the default plan when the company is created; switch to the chosen one.
-            $chosen = !empty($data['plan']) ? \App\Models\Platform\Plan::where('code', $data['plan'])->first() : null;
-            if ($chosen && $company->subscription && $company->subscription->platform_plan_id !== $chosen->id) {
-                app(\App\Services\Platform\SubscriptionService::class)->changePlan($company->subscription, $chosen, 'monthly', 'Chosen at sign-up');
-            }
-
-            return User::create([
-                'name' => $data['name'],
-                'username' => $this->uniqueUsername($data['email']),
-                'company_id' => $company->id,
-                'email' => $data['email'],
-                'role' => 'admin',
-                'password' => Hash::make($data['password']),
-            ]);
-        });
+        return app(WorkspaceRegistrar::class)->register($data);
     }
 
-    /** Welcome email to the new admin and a sign-up alert to the platform inbox. */
+    /**
+     * Alert the platform inbox. The Registered event has already emailed the verification link;
+     * the welcome email follows once the address is confirmed (VerificationController::verified).
+     */
     protected function registered(\Illuminate\Http\Request $request, $user)
     {
-        $notifier = app(\App\Services\Notifications\Notifier::class);
-        $sub = $user->company?->subscription;
-        $plan = $sub?->plan?->name;
+        app(WorkspaceRegistrar::class)->alertPlatform($user);
 
-        $notifier->send('account.welcome', $user, new \App\Notifications\Account\WelcomeToWorkspace($user, $plan, $sub?->trial_ends_at?->format('d M Y')), $user->company_id);
-        if ($platform = config('notifications.platform_email')) {
-            $notifier->send('account.welcome', $platform, new \App\Notifications\Account\NewSignupAlert($user, $plan), null);
-        }
-
-        return null;
-    }
-
-    private function uniqueUsername(string $email): string
-    {
-        $base = Str::slug(Str::before($email, '@'), '_') ?: 'user';
-        $username = $base;
-        $suffix = 1;
-
-        while (User::where('username', $username)->exists()) {
-            $username = $base.'_'.$suffix++;
-        }
-
-        return $username;
+        return redirect()->route('verification.notice');
     }
 }

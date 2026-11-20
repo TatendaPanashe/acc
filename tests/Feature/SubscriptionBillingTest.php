@@ -76,7 +76,7 @@ class SubscriptionBillingTest extends TestCase
     public function test_registration_starts_a_14_day_trial_on_the_chosen_plan(): void
     {
         auth()->logout();
-        $this->post('/register', ['name' => 'Tendai', 'email' => 'tendai@example.com', 'password' => 'password123', 'password_confirmation' => 'password123', 'plan' => 'essential']);
+        $this->post('/register', ['name' => 'Tendai', 'email' => 'tendai@example.com', 'password' => 'Password123', 'password_confirmation' => 'Password123', 'plan' => 'essential']);
 
         $sub = User::where('email', 'tendai@example.com')->first()->company->subscription;
         $this->assertSame(['trialing', 'essential', '2026-06-15'], [$sub->status, $sub->plan->code, $sub->trial_ends_at->toDateString()]);
@@ -269,7 +269,7 @@ class SubscriptionBillingTest extends TestCase
     public function test_plan_limits_users_branches_and_advanced_roles(): void
     {
         $this->onPlan('essential'); // 2 users, 1 branch, no advanced permissions
-        $user = fn ($name, $role = 'accountant') => ['name' => $name, 'username' => strtolower($name), 'email' => strtolower($name).'@example.com', 'role' => $role, 'password' => 'password123', 'password_confirmation' => 'password123'];
+        $user = fn ($name, $role = 'accountant') => ['name' => $name, 'username' => strtolower($name), 'email' => strtolower($name).'@example.com', 'role' => $role, 'password' => 'Password123', 'password_confirmation' => 'Password123'];
 
         $this->post(route('company.team.store'), $user('Fiona', 'finance_manager'))->assertSessionHasErrors('role');
         $this->post(route('company.team.store'), $user('Clerk'))->assertSessionHasNoErrors();

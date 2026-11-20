@@ -234,6 +234,8 @@
                 <h2>Sign in</h2>
                 <p class="subtitle">Staff can use email or username. Clients can use their customer email.</p>
 
+                @include('auth.partials.google-button', ['intent' => 'signin'])
+
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
 
