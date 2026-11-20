@@ -39,14 +39,16 @@
 
         <h1>Confirm your email</h1>
 
-        @if (session('resent'))
+        @if (session('verification_failed'))
+            <div class="acc-verify-alert err" role="alert">We could not send the confirmation email just now. Please try “Send the link again” in a few minutes, or contact us if it keeps happening.</div>
+        @elseif (session('resent'))
             <div class="acc-verify-alert ok" role="status">We have sent a new confirmation link. It can take a minute to arrive.</div>
         @endif
         @if ($errors->any())
             <div class="acc-verify-alert err" role="alert">{{ $errors->first() }}</div>
         @endif
 
-        <p>We sent a confirmation link to<br><span class="email">{{ auth()->user()->email }}</span></p>
+        <p>{{ session('verification_failed') ? 'Your confirmation link is for' : 'We sent a confirmation link to' }}<br><span class="email">{{ auth()->user()->email }}</span></p>
         <p>Click the link in that email to open your workspace. You can't use acc263 until your email is confirmed.</p>
 
         <form method="POST" action="{{ route('verification.resend') }}">

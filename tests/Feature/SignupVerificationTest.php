@@ -144,6 +144,32 @@ class SignupVerificationTest extends TestCase
         });
     }
 
+    public function test_mail_server_failure_does_not_break_sign_up_and_is_reported(): void
+    {
+        $failing = new class extends \Illuminate\Support\Testing\Fakes\NotificationFake {
+            public function sendNow($notifiables, $notification, ?array $channels = null)
+            {
+                throw new \RuntimeException('Connection could not be established with host "smtp.example.test:465"');
+            }
+        };
+        Notification::swap($failing);
+        \Illuminate\Support\Facades\Log::spy();
+
+        $this->signUp()->assertRedirect(route('verification.notice'))->assertSessionHas('verification_failed', true);
+
+        $this->assertSame(1, User::count());
+        \Illuminate\Support\Facades\Log::shouldHaveReceived('error')->withArgs(fn ($message) => str_contains($message, 'Verification email to nyasha@example.com failed'));
+        $this->get(route('verification.notice'))->assertOk();
+    }
+
+    public function test_verify_page_explains_a_failed_send(): void
+    {
+        $this->signUp();
+
+        $this->withSession(['verification_failed' => true])->get(route('verification.notice'))
+            ->assertOk()->assertSee('We could not send the confirmation email just now');
+    }
+
     public function test_team_members_added_by_an_admin_do_not_need_to_confirm(): void
     {
         $company = Company::create(['name' => 'Acme', 'status' => true, 'onboarding_completed_at' => now()]);

@@ -54,10 +54,22 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    /** Verification link in the acc263 email layout (sent at sign-up and from "resend"). */
+    /**
+     * Verification link in the acc263 email layout (sent at sign-up and from "resend").
+     * Sent immediately; if the mail server refuses it, sign-up still completes, the error is
+     * logged, and the "Confirm your email" page says the email could not be sent.
+     */
     public function sendEmailVerificationNotification(): void
     {
-        $this->notify(new VerifyEmailAddress);
+        try {
+            $this->notify(new VerifyEmailAddress);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Verification email to '.$this->email.' failed: '.$e->getMessage());
+            report($e);
+            if (app()->bound('session.store') && request()->hasSession()) {
+                request()->session()->flash('verification_failed', true);
+            }
+        }
     }
 
     public function company()
